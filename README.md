@@ -4,7 +4,9 @@ A guide on Natural Language Processing (NLP) structured after following the Udem
 
 I've done several courses by Portilla in the last years and he's a great content creator; his videos are very practical. The intuition of the theoretical concepts is briefly provided and practical coding is explained. I often look for more theoretical insights in papers and text books, but that's not necessary in practice, unless one wants to carry out research.
 
-The file 
+Note that I would have forked the original repository to add notes, but the material is provided with a download link.
+
+My notes file 
 
 `NLP_Guide.md`
 

@@ -2,20 +2,22 @@
 
 A guide on Natural Language Processing (NLP) structured after following the Udemy course [NLP - Natural Language Processing with Python](https://www.udemy.com/course/nlp-natural-language-processing-with-python/) by José Marcial Portilla.
 
-This file 
+Note that I would have forked the original repository to add notes, but the material is provided with a download link.
+
+This notes file of mine
 
 `NLP_Guide.md`
 
 provides a general guide of the course and points out to the different notebooks of each section:
 
-1. Setup
-2. Python Text Basics
-3. NLP Basics
-4. Part of Speech Tagging & Named Entity Recognition
-5. Text Classification
-6. Semantics and Sentiment Analysis
-7. Topic Modeling
-8. Deep Learning for NLP
+0. Setup
+1. Python Text Basics: `./01_Python_Text_Basics`
+2. NLP Basics
+3. Part of Speech Tagging & Named Entity Recognition
+4. Text Classification
+5. Semantics and Sentiment Analysis
+6. Topic Modeling
+7. Deep Learning for NLP
 
 Mikel Sagardia, 2022.
 No warranties.
@@ -53,4 +55,28 @@ dependencies:
   - jupyter=1.0.0
 ```
 
-## 1. Python Text Basics
+## 1. Python Text Basics: `./01_Python_Text_Basics`
+
+### `01_Text_PDF_Files.ipynb`
+
+This notebook presents the basic python commands to open and handle files and the text in them.
+
+Overview of contents:
+
+1. Working with Text Strings
+    - 1.1 f-Strings
+    - 1.2 Minimum Widths, Alignment and Padding
+    - 1.3 Date Formatting
+2. Working with Text Files
+    - 2.1 Create a File with Magic Commands
+    - 2.2 Opening and Handling Text Files
+    - 2.3 Writing to Files
+    - 2.4 Appending to a File
+    - 2.5 Context Managers
+3. Working with PDF Files
+    - 3.1 Opening PDFs
+    - 3.2 Adding to PDFs
+    - 3.3 Example: Extracting Text from PDFs
+
+### `02_Regular_Expressions.ipynb`
+

@@ -28,5 +28,5 @@ Besides of that:
 - `./data/` contains texts and datasets.
 
 Mikel Sagardia, 2022.
-Enjoy. No warranties.
+Enjoy. No guarantees.
 

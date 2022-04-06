@@ -1,4 +1,4 @@
-Diclaimer: I made this repository while following the Udemy course [NLP - Natural Language Processing with Python](https://www.udemy.com/course/nlp-natural-language-processing-with-python/) by José Marcial Portilla. The original course notebooks and materials were provided with a download link, I haven't found a repository to fork from.
+Disclaimer: I made this repository while following the Udemy course [NLP - Natural Language Processing with Python](https://www.udemy.com/course/nlp-natural-language-processing-with-python/) by José Marcial Portilla. The original course notebooks and materials were provided with a download link, I haven't found a repository to fork from.
 
 Mikel Sagardia, 2022.
-No warranties.
+No guarantees.

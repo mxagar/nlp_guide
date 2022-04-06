@@ -20,7 +20,7 @@ provides a general guide of the course and points out to the different notebooks
 7. Deep Learning for NLP
 
 Mikel Sagardia, 2022.
-No warranties.
+No guarantees.
 
 ## 0. Setup
 
@@ -79,4 +79,22 @@ Overview of contents:
     - 3.3 Example: Extracting Text from PDFs
 
 ### `02_Regular_Expressions.ipynb`
+
+This notebook introduces the basics of regular expression searching; functions, identifiers and examples are presented.
+
+Overview of contents:
+
+1. Basic Search Functions
+2. Patterns
+    - 2.1 Identifiers & Quantifiers
+    - 2.2 Groups
+    - 2.3 OR Statements: `|`
+    - 2.4 Wildcards: `.`
+    - 2.5 Starts with and Ends with: `^,$`
+    - 2.6 Exclusion: `[^]`
+    - 2.7 Brackets for Grouping (Words): `[]+`
+    - 2.8 Parenthesis for Multiple Options
+    - 2.9 Example: Find Emails
+
+## 2. Natural Language Processing Basics: `02_Natural_Language_Processing_Basics`
 

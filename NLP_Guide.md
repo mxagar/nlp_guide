@@ -28,9 +28,12 @@ I installed the following packages/libraries in the environments `ds` and `tf`, 
 
 ```bash
 conda activate ds
-conda install spacy keras nltk
-conda activate tf
-conda install spacy keras nltk
+conda install keras nltk
+conda install -c conda-forge spacy
+# Download dictionaries/models
+python -m spacy download en # spacy.load('en_core_news_sm')
+python -m spacy download es # spacy.load('es_core_news_sm')
+python -m spacy download de # spacy.load('de_core_news_sm')
 ```
 
 However, a YAML with the requirements to create a new conda environment is provided:
@@ -96,5 +99,5 @@ Overview of contents:
     - 2.8 Parenthesis for Multiple Options
     - 2.9 Example: Find Emails
 
-## 2. Natural Language Processing Basics: `02_Natural_Language_Processing_Basics`
+## 2. Natural Language Processing Basics: `02_Natural_Language_Processing_Basics/`
 

@@ -101,3 +101,34 @@ Overview of contents:
 
 ## 2. Natural Language Processing Basics: `02_Natural_Language_Processing_Basics/`
 
+### `01_Spacy_Basics.ipynb`
+
+The two main NLP libraries we are going to use are **Spacy** and **NLTK**.
+
+Main differences of the two libraries:
+
+- NLTK was released in 2001 and it has several algorithms and models implemented.
+- Spacy was released in 2015 and it has the best and fastest methods only; it can be more than 100x faster than NLTK.
+
+Spacy can have a tricky installation: look at [Spacy Installation](https://spacy.io/usage). Take into account that we need to download the dictionaries, too. I installed everything as follows:
+
+```bash
+conda install keras nltk
+conda install -c conda-forge spacy
+# Download dictionaries/models
+python -m spacy download en # spacy.load('en_core_news_sm')
+python -m spacy download es # spacy.load('es_core_news_sm')
+python -m spacy download de # spacy.load('de_core_news_sm')
+```
+
+Both libraries are used to perform **Natural Language Processing**, which consists in parsing and structuring the raw text so that it can be handled by the computer.
+
+For a starting guide: [Spacy 101](https://spacy.io/usage/spacy-101).
+
+Overview of contents in the notebook:
+
+1. Model, Doc, Pipeline
+2. Tokens and Their Attributes
+3. Spans (Slices of Docs) and Sentences
+
+### `02_Tokenization.ipynb`

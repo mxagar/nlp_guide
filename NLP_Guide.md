@@ -197,3 +197,12 @@ Lemmas can be accessed via `token.lemma_`, nothing additional needs to be done!
 
 **Stop words** are really common words that don't give any additional information; therefore, they are usually removed from the text. Each language has its built-in list; in English, spacy has 326 stop words. Also, we can remove or add words from/to the list; however, the list is not saved when we exit.
 
+### `06_Vocabulary_Matching.ipynb`
+
+This notebook shows how tokens of groups of tokens can be found/matched in a text. It is equivalent to applying regex, but dictionaries are used instead, making the process more powerful and probably less cryptic.
+
+Overview of contents:
+1. Rule-Based Matching: like regex to find tokens, but with rules defined using dictionaries and pre-defined keys.
+    - 1.1 Pattern Options and Further Keys
+2. Phrase Matching: same as before, but applied to group of words (i.e., phrases), not just single tokens.
+

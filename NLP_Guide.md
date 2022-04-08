@@ -132,3 +132,25 @@ Overview of contents in the notebook:
 3. Spans (Slices of Docs) and Sentences
 
 ### `02_Tokenization.ipynb`
+
+Tokenization is the process of breaking down the raw text into component pieces or tokens. Tokens have an identified meaning; they are often words, but might be also spaces, punctuation, negation particles, etc. -- because all those have also an identifiable meaning!
+
+A figure from [Spacy: Linguistic Features](https://spacy.io/usage/linguistic-features) gives a good example:
+
+![Tokenization (from the Spacy website)](./pics/tokenization.png)
+
+Note that tokenization does not change the text yet, tokens are pieces of the original text, tokenization breaks it down to particles. The splitting occurs when these elements are found:
+- White space: ` `
+- Prefixes: `" $ (`
+- Suffixes: characters at the end: `km ) !`
+- Infixes: characters in-between: `/ -`
+- Exceptions: tokens are split or prevented from splitting depending on the case: `let's`, `U.S.`
+
+However, punctuation or similar symbols part of email addresses and similar are kept part of the token.
+
+Overview of contents:
+1. Tokenization Examples
+2. Accessing and Handling Tokens in a `Doc`
+3. Named Entities
+4. Noun Chunks = Sintagma Nominal
+5. Visualizers: Syntatic Dependencies & Entities

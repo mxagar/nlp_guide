@@ -81,6 +81,12 @@ Overview of contents:
     - 3.2 Adding to PDFs
     - 3.3 Example: Extracting Text from PDFs
 
+Summary of the most important commands:
+
+```python
+
+```
+
 ### `02_Regular_Expressions.ipynb`
 
 This notebook introduces the basics of regular expression searching; functions, identifiers and examples are presented.

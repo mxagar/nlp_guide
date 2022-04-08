@@ -154,3 +154,46 @@ Overview of contents:
 3. Named Entities
 4. Noun Chunks = Sintagma Nominal
 5. Visualizers: Syntatic Dependencies & Entities
+
+### `03_Stemming.ipynb`
+
+Once we have broken down the text into separate tokens, the next step in NLP is **stemming**, which consists in extracting the base form of each token. A word can have many variations; we call **stem** to the original or root form without variations. For example:
+
+`boat -> boats, boating, boater`
+
+Removing final parts to get the stem is not straightforward, since it is full of exceptions; therefore, Spacy does not have a stemmer, but instead, it performs directly **lemmatization**. However, since stemming is a known process in NLP, we're going to try it with [NLTK](https://www.nltk.org/).
+
+Two important stemming algorithms are were ddeveloped by Martin Porter (in 1980):
+- Porter Stemmer
+- Snowball Stemmer (developed later, based on the first; it improves the speed)
+
+The algorithms use five phases of word reduction, each with its own set of mapping rules.  For instance, in the first phase, easy suffixes are simplified; from all rules in a phase, the one which achieves the largest reduction is applied:
+
+`SSES -> SS:  caresses -> caress`
+`IES -> I:    ponies -> poni`
+
+In later phases, more complex mappings are applied, which take more variables into account:
+
+`ATIONAL -> ATE:   relational -> relate; national -> national`
+
+Note that many exceptions arise. Additionally, each language requires its own stemmer.
+
+Overview of contents:
+1. Porter Stemmer
+2. Snowball Stemmer
+
+### `04_Lemmatization.ipynb`
+
+Beyond shortening the word as when we do stemming, lemmatization tracks the original word with its context to apply morphological analysis; for instance:
+
+- the lemma of `was` is `be`, the lemma of `mice` is `mouse`;
+- the lemma of `meeting` can be `meet` (if a verb) or `meeting` (if a noun).
+
+Lemmatization is much more informative and advanced, and that is the reason spacy has only lemmatization and not stemming.
+
+Lemmas can be accessed via `token.lemma_`, nothing additional needs to be done!
+
+### `05_StopWords.ipynb`
+
+**Stop words** are really common words that don't give any additional information; therefore, they are usually removed from the text. Each language has its built-in list; in English, spacy has 326 stop words. Also, we can remove or add words from/to the list; however, the list is not saved when we exit.
+

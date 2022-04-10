@@ -221,6 +221,8 @@ NLP can be significanly improved if the morphological information of the words t
 - `token.pos_`: simple morphology, e.g., noun, verb, adjective, etc.
 - `token.tag_`: detailed morphology, e.g., plural noun, past-tense verb, superlative adjective, etc.
 
+This notebook summarizes how to access and handle POS tags and collects lists of all possible classes of them.
+
 Overview of contents:
 
 1. Lists of Possibles POS: Simple and Detailed
@@ -228,4 +230,6 @@ Overview of contents:
 3. Counting POS & DEP Classes: Frequency Lists
 4. Visualizing Parts-of-Speech (POS)
 
-### Named Entity Recognition: 
+### Named Entity Recognition: `02_Named_Entity_Recognition.ipynb`
+
+

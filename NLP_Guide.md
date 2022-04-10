@@ -12,8 +12,8 @@ provides a general guide of the course and points out to the different notebooks
 
 0. Setup
 1. Python Text Basics: `./01_Python_Text_Basics`
-2. NLP Basics
-3. Part of Speech Tagging & Named Entity Recognition
+2. NLP Basics: `./02_Natural_Language_Processing_Basics`
+3. Part of Speech Tagging & Named Entity Recognition: `./03_POS_Tagging_NER`
 4. Text Classification
 5. Semantics and Sentiment Analysis
 6. Topic Modeling
@@ -60,7 +60,7 @@ dependencies:
 
 ## 1. Python Text Basics: `./01_Python_Text_Basics`
 
-### `01_Text_PDF_Files.ipynb`
+### Working with Text and PDF Files: `01_Text_PDF_Files.ipynb`
 
 This notebook presents the basic python commands to open and handle files and the text in them.
 
@@ -87,7 +87,7 @@ Summary of the most important commands:
 
 ```
 
-### `02_Regular_Expressions.ipynb`
+### Regular Expressions: `02_Regular_Expressions.ipynb`
 
 This notebook introduces the basics of regular expression searching; functions, identifiers and examples are presented.
 
@@ -107,7 +107,7 @@ Overview of contents:
 
 ## 2. Natural Language Processing Basics: `02_Natural_Language_Processing_Basics/`
 
-### `01_Spacy_Basics.ipynb`
+### Spacy Basics: `01_Spacy_Basics.ipynb`
 
 The two main NLP libraries we are going to use are **Spacy** and **NLTK**.
 
@@ -137,7 +137,7 @@ Overview of contents in the notebook:
 2. Tokens and Their Attributes
 3. Spans (Slices of Docs) and Sentences
 
-### `02_Tokenization.ipynb`
+### Tokenization: `02_Tokenization.ipynb`
 
 Tokenization is the process of breaking down the raw text into component pieces or tokens. Tokens have an identified meaning; they are often words, but might be also spaces, punctuation, negation particles, etc. -- because all those have also an identifiable meaning!
 
@@ -161,7 +161,7 @@ Overview of contents:
 4. Noun Chunks = Sintagma Nominal
 5. Visualizers: Syntatic Dependencies & Entities
 
-### `03_Stemming.ipynb`
+### Stemming: `03_Stemming.ipynb`
 
 Once we have broken down the text into separate tokens, the next step in NLP is **stemming**, which consists in extracting the base form of each token. A word can have many variations; we call **stem** to the original or root form without variations. For example:
 
@@ -188,7 +188,7 @@ Overview of contents:
 1. Porter Stemmer
 2. Snowball Stemmer
 
-### `04_Lemmatization.ipynb`
+### Lemmatization: `04_Lemmatization.ipynb`
 
 Beyond shortening the word as when we do stemming, lemmatization tracks the original word with its context to apply morphological analysis; for instance:
 
@@ -199,11 +199,11 @@ Lemmatization is much more informative and advanced, and that is the reason spac
 
 Lemmas can be accessed via `token.lemma_`, nothing additional needs to be done!
 
-### `05_StopWords.ipynb`
+### Stop Words: `05_StopWords.ipynb`
 
 **Stop words** are really common words that don't give any additional information; therefore, they are usually removed from the text. Each language has its built-in list; in English, spacy has 326 stop words. Also, we can remove or add words from/to the list; however, the list is not saved when we exit.
 
-### `06_Vocabulary_Matching.ipynb`
+### Vocabulary and Matching: `06_Vocabulary_Matching.ipynb`
 
 This notebook shows how tokens of groups of tokens can be found/matched in a text. It is equivalent to applying regex, but dictionaries are used instead, making the process more powerful and probably less cryptic.
 
@@ -212,3 +212,20 @@ Overview of contents:
     - 1.1 Pattern Options and Further Keys
 2. Phrase Matching: same as before, but applied to group of words (i.e., phrases), not just single tokens.
 
+## 3. Part-of-Speech (POS) Tagging an Named Entity Recognition (NER): `03_POS_Tagging_NER/`
+
+### Part of Speech (POS) Tagging: `01_PartOfSpeech_Tagging.ipynb`
+
+NLP can be significanly improved if the morphological information of the words that compose the text is used. That morphological information is encoded in the *part-of-speech* tags of the tokens, which can be accessed via:
+
+- `token.pos_`: simple morphology, e.g., noun, verb, adjective, etc.
+- `token.tag_`: detailed morphology, e.g., plural noun, past-tense verb, superlative adjective, etc.
+
+Overview of contents:
+
+1. Lists of Possibles POS: Simple and Detailed
+2. Examples of POS
+3. Counting POS & DEP Classes: Frequency Lists
+4. Visualizing Parts-of-Speech (POS)
+
+### Named Entity Recognition: 

@@ -232,4 +232,31 @@ Overview of contents:
 
 ### Named Entity Recognition: `02_Named_Entity_Recognition.ipynb`
 
+This notebook deals with the recognition of **named entities**.
+
+Named entities are:
+- Person names
+- Organizations
+- Locations
+- Medical codes
+- Time expressions
+- Quantities
+- Monetary values
+- Percentages
+- ... more examples provided in Section 1.
+
+Spacy recognizes them for us automatically and makes the available via `doc.ents` and `ent.label_` & other properties liested in Section 1.
+Additionally, we can easily create our own custom entities.
+
+Overview of contents:
+
+1. List of Named Entity Properties and Label Tags
+2. Examples of Named Entities
+3. Adding New Entities
+    - 3.1 Adding Single Term Entities
+    - 3.2 Adding Entities with Several Terms: Phrases
+4. Counting Named Entities
+5. Visualizing Named Entities
+
+### Sentence Segmentation: `03_Sentence_Segmentation.ipynb`
 

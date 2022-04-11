@@ -14,7 +14,7 @@ provides a general guide of the course and points out to the different notebooks
 1. Python Text Basics: `./01_Python_Text_Basics`
 2. NLP Basics: `./02_Natural_Language_Processing_Basics`
 3. Part of Speech Tagging & Named Entity Recognition: `./03_POS_Tagging_NER`
-4. Text Classification
+4. Text Classification: `04_Text_Classification/`
 5. Semantics and Sentiment Analysis
 6. Topic Modeling
 7. Deep Learning for NLP
@@ -245,7 +245,7 @@ Named entities are:
 - Percentages
 - ... more examples provided in Section 1.
 
-Spacy recognizes them for us automatically and makes the available via `doc.ents` and `ent.label_` & other properties liested in Section 1.
+Spacy recognizes them for us automatically and makes the available via `doc.ents` and `ent.label_` & other properties listed in Section 1.
 Additionally, we can easily create our own custom entities.
 
 Overview of contents:
@@ -273,3 +273,6 @@ Overview of contents:
 2. Adding New Sentence Segmentation Rules
 3. Changing Sentence Segmentation Rules (missing section, because code didn't work for my spacy lib version)
 
+## 4. Text Classification: `04_Text_Classification/`
+
+### Introduction to Scikit Learn and ML Concepts: `00_ScikitLearn_Intro.ipynb`

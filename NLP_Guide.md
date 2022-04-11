@@ -260,3 +260,16 @@ Overview of contents:
 
 ### Sentence Segmentation: `03_Sentence_Segmentation.ipynb`
 
+Spacy does a great job in segmenting standard sentences separated with `.`. These can be accessed with the generator `doc.sents`, which provides lists of tokens between basedon the flag `token.is_sent_start`.
+
+However, we may want to re-define how sentences are segmented, for instance:
+- Cut sentences when `;` appears
+- Cut sentences **only** when `\n` or line breaks appear (e.g., in poetry), not under `.`
+
+This notebook presents how to deal with such cases.
+
+Overview of contents:
+1. Examples of Sentence Segmentation
+2. Adding New Sentence Segmentation Rules
+3. Changing Sentence Segmentation Rules (missing section, because code didn't work for my spacy lib version)
+

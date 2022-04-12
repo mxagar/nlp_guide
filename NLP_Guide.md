@@ -302,3 +302,37 @@ Overview of contents:
         - Support Vector Machines: Model Metrics / Evaluation
 
 ### Introduction to Scikit Learn and ML Concepts: `00_ScikitLearn_Intro.ipynb`
+
+This document explains the basics of text vectorization using TFIDF.
+
+In order to improve the SMS classification or any similar NLP problem, we need to vectorize the text, i.e., convert words/tokens/strings into numerical values. One approach consists in creating a vector which contains an element for every unique/possible word in our texts: that generic vector to be filled in is a **vocabulary**. Each SMS/text is transformed into such a vector, and, in that form, it is considered to be a **bag of words**. With those bags of words, we can
+
+- For each SMS or text document, count the number of times a word/term occurs; that way, we get the **Document Term Matrix**.
+- A better alternative consists in weighting the term frequency in each text with the inverse frequency of appearance in all the texts: **TF-IDF, Term Frequency, Inverse Document Frequency**. This approach takes into account the importance of a word in the whole corpus, i.e., the complete text dataset. As such, stop words get a lower weight, thus less importance.
+
+The TFIDF formulas are as follows (although everything is automatically computed):
+
+- $\textrm{tfidf}(t,d,D) = \textrm{tf}(t,d) \cdot \textrm{idf}(t,D)$
+
+- $\textrm{tf}(t,d) = \textrm{count}(t \in d)$: `count (term t in document d)`
+
+- $\textrm{idf}(t,D) = \log \frac{N}{| \{d \in D \, : t \in d \} |}$: `log (total documents N / documents which contain term t)`
+
+Note that the concept of bags of words and the vocabulary can be improved:
+- Instead of words, we can used tokens that have been stemmed.
+- In addition to counting the stemmed tokens, we can use additional information for each of them: morphological information (`pos_`) and syntactic information (`dep_`). Thus we end up having highly dimensional and sparse hypermatrices (tensors).
+
+Overview of contents:
+
+1. Manual Creation of Bags-of-Words
+2. Text Feature Extraction with Scikit-Learn
+   - 2.1 Load Dataset and Explore It
+   - 2.2 Train/Test Split
+   - 2.3 Vectorization
+     - 2.3.1 Document Term Matrix: `CountVectorizer`
+     - 2.3.2 Term Frequency Inverse Document Frequency: `TfidVectorizer`
+   - 2.4 Model: Definition and Training
+   - 2.5 Build a Pipeline
+   - 2.6 Evaluate the Pipeline/Model
+   - 2.7 Inference
+

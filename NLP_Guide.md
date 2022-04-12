@@ -276,3 +276,29 @@ Overview of contents:
 ## 4. Text Classification: `04_Text_Classification/`
 
 ### Introduction to Scikit Learn and ML Concepts: `00_ScikitLearn_Intro.ipynb`
+
+This notebook is a brief introduction to Machine Learning and Sckit-Learn.
+
+We are going to work on the [SMS Spam Dataset @ UCI](https://archive.ics.uci.edu/ml/datasets/SMS+Spam+Collection) as a starter to check the basic ML pipeline with Scikit-Learn. The dataset labels an SMS text as `spam` or `ham`; additionally we have the SMS length and how many punctuation symbols were used. Steps: 
+
+- First, we are going to predict `ham`/`spam` only with the numerical features of `length` and `punct` in the present notebook. However, these values are not enough to predict significantly better than random guesses.
+- Then, we're going to extract features from the text in the next notebook.
+
+Overview of contents:
+
+1. ML Concepts - A Refresher: Supervised vs. Unsupervised ML, Performance Metrics of Regression, Performance Metrics of Classification (Accuracy, Precision, Recall, F1, Confusion Matrix).
+2. Scikit-Learn Pipeline with SMS Spam Use Case
+    - 2.1 Explore the Dataset: Target & Predictors
+        - Target: Ham/Spam
+        - Predictor 1: Length
+        - Predictor 2: Punctuation
+    - 2.2 Train/Test Split
+    - 2.3 Define, Train & Evaluate Classification Models
+        - Logistic Regression: Model Training
+        - Logistic Regression: Model Metrics / Evaluation
+        - Naive Bayes: Model Training
+        - Naive Bayes: Model Metrics / Evaluation
+        - Support Vector Machines: Model Training
+        - Support Vector Machines: Model Metrics / Evaluation
+
+### Introduction to Scikit Learn and ML Concepts: `00_ScikitLearn_Intro.ipynb`

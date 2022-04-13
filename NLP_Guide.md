@@ -277,7 +277,7 @@ Overview of contents:
 
 ### Introduction to Scikit Learn and ML Concepts: `00_ScikitLearn_Intro.ipynb`
 
-This notebook is a brief introduction to Machine Learning and Sckit-Learn.
+This notebook is a brief introduction to Machine Learning and Sckit-Learn. We are going to work on the [SMS Spam Dataset @ UCI](https://archive.ics.uci.edu/ml/datasets/SMS+Spam+Collection) as a starter to check the basic ML pipeline with Scikit-Learn. The dataset labels an SMS text as `spam` or `ham`.
 
 We are going to work on the [SMS Spam Dataset @ UCI](https://archive.ics.uci.edu/ml/datasets/SMS+Spam+Collection) as a starter to check the basic ML pipeline with Scikit-Learn. The dataset labels an SMS text as `spam` or `ham`; additionally we have the SMS length and how many punctuation symbols were used. Steps: 
 
@@ -301,7 +301,7 @@ Overview of contents:
         - Support Vector Machines: Model Training
         - Support Vector Machines: Model Metrics / Evaluation
 
-### Introduction to Scikit Learn and ML Concepts: `00_ScikitLearn_Intro.ipynb`
+### Text Feature Extraction: `01_Text_Feature_Extraction.ipynb`
 
 This document explains the basics of text vectorization using TFIDF.
 
@@ -336,3 +336,15 @@ Overview of contents:
    - 2.6 Evaluate the Pipeline/Model
    - 2.7 Inference
 
+### Text Classification Project: `02_Text_Classification_Project.ipynb`
+
+This notebook shows how to perfom text classification by applying bags-of-words and TFIDF. The [Movie Review Dataset from Cornell](https://www.cs.cornell.edu/people/pabo/movie-review-data/) is used. Nothing new is shown here, just a more complex example than in previous notebook.
+
+Overview of contents:
+
+1. Load and Explore Dataset
+2. Train/Test Split
+3. Build Pipelines: Naive Bayes & Support Vector Machines with `TfidfVectorizer(stop_words)`
+4. Evaluate Pipelines
+    - 4.1 Naive Bayes
+    - 4.2 Support Vector Machines

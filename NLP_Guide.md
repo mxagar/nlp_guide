@@ -14,9 +14,9 @@ provide a general guide of the course and points out to the different notebooks 
 1. Python Text Basics: `./01_Python_Text_Basics`
 2. NLP Basics: `./02_Natural_Language_Processing_Basics`
 3. Part of Speech Tagging & Named Entity Recognition: `./03_POS_Tagging_NER`
-4. Text Classification: `04_Text_Classification/`
-5. Semantics and Sentiment Analysis: `05_Semantics_Sentiment_Analysis/`
-6. Topic Modeling
+4. Text Classification: `./04_Text_Classification`
+5. Semantics and Sentiment Analysis: `./05_Semantics_Sentiment_Analysis`
+6. Topic Modeling: `./06_Topic_Modeling`
 7. Deep Learning for NLP
 
 Mikel Sagardia, 2022.
@@ -896,4 +896,273 @@ This notebook is not that interesting; I have added the most important additions
 - Pipelines with different classifiers: Naive Bayes, Support Vector Machines.
 
 ## 5. Semantics and Sentiment Analysis: `05_Semantics_Sentiment_Analysis/`
+
+### 5.1 Semantics and Word Vectors: `01_Word_Vectors.ipynb`
+
+We are going to use **embedded word vectors** already available in Spacy; but for that, we need to use medium or large language models, which need to be installed explicitly:
+
+```bash
+python -m spacy download en_core_web_md # spacy.load('en_core_news_md')
+python -m spacy download en_core_web_lg # spacy.load('en_core_news_lg')
+```
+
+When we load any of these models, each token has its vector representation. The concept of representing words with vectors was popularized by Mikolov et al. in 2013 (Google) -- see `../literature/Mikolov_Word2Vec_2013.pdf`.
+
+The idea is that we get an `N` dimensional vector representation of each word in the vocabulary, such that:
+- **Close vectors are words semantically related**, and associations can be inferred: `man` is to `boy` as `woman` is to `girl`.
+- **We can perform vector operations that are reflected in the semantical space**: `vector(queen) ~ vector(king) - vector(man) + vector(woman)`.
+
+In order to generate those word vector embeddings, large corpuses of texts are trained with sets of close words mapping each word to a numerical vector. I understand that in the begining, words are represented as one-hot encoded vectors of dimension `M`, being `M` the size of the vocabulary:
+
+`[0, 1, 0, ..., 0] (M: vocabulary size) -> [0.2, 0.5, ..., 0.1] (N: latent word vector space)`
+
+A common metric to measure similarity between word vectors is the **cosine similarity**: cosine of the angle formed by the two words.
+
+In Spacy, a word vector has dimension `N = 300`; however, not all language models have word vectors!
+- `en_core_news_sm` (35MB): no word vector representations
+- `en_core_news_md` (116MB): 685k keys, 20k unique vectors (300 dimensions)
+- `en_core_news_lg` (812MB): 685k keys, 685k unique vectors (300 dimensions)
+
+Overview of contents:
+
+1. Word Vectors: Token & Doc Vectors
+2. Vector Similarity: Cosine Similarity
+3. Vector Norms
+4. Vector Arithmetic
+
+Summary of most important python commands:
+
+```python
+
+### 1. Word Vectors: Token & Doc Vectors
+
+import numpy as np
+import spacy
+#nlp = spacy.load('en_core_web_md')  # make sure to use a larger model - it takes longer
+nlp = spacy.load('en_core_web_lg')  # make sure to use a larger model - it takes longer
+
+nlp(u'lion').vector.shape # (300,)
+
+# Number of unique vectors loaded in the model
+len(nlp.vocab.vectors) # 684830
+
+# Doc and Span objects themselves have vectors,
+# derived from the averages of individual token vectors. 
+# This makes it possible to compare similarities between whole documents.
+doc1 = nlp(u'The quick brown fox jumped over the lazy dogs.')
+doc1.vector.shape
+v1 = doc1.vector
+
+# According to the documentation, the vector of a Doc is averaged
+# without considering the position of each word.
+# However, there seems to be some positional encoding, because the vectors are not the same
+# Or is it just the numerical error?
+#doc = nlp(u'The quick brown jumped fox over the lazy dogs.')
+doc2 = nlp(u'The brown quick jumped fox over the lazy dogs.')
+v2 = doc.vector
+d1=v1-v1
+d2=v1-v2
+np.sqrt(sum(d1*d1))
+np.sqrt(sum(d2*d2))
+
+### 2. Vector Similarity: Cosine Similarity
+
+# Create a three-token Doc object
+tokens = nlp(u'lion cat pet')
+# Iterate through token combinations
+# Note: token1.similarity(token2) == token2.similarity(token1)
+for token1 in tokens:
+    for token2 in tokens:
+        print(token1.text, token2.text, token1.similarity(token2))
+
+# Opposites are not necessarily different!
+tokens = nlp(u'like love hate')
+# Iterate through token combinations:
+for token1 in tokens:
+    for token2 in tokens:
+        print(token1.text, token2.text, token1.similarity(token2))
+
+### 3. Vector Norms
+
+# Note that usual words, including names, can have vector representations;
+# however, in some cases we can come up with a word that has no vector.
+tokens = nlp(u'dog cat nargle')
+# token.has_vector: True/False
+# token.vector_norm: L2 norm or Euclidean length of the vector
+# token.is_oov: is out-of-vocabulary, True/False (maybe it is in vocabulary, but has no vector)
+for token in tokens:
+    print(token.text, token.has_vector, token.vector_norm, token.is_oov)
+
+### 4. Vector Arithmetic
+
+# With word vector embeddings we can perform arithmetics that are reflected in meaningful sematic operations:
+# vector(queen) ~ vector(king) - vector(man) + vector(woman)
+# However, in my case at least, it does not seem to work that well...
+
+from scipy import spatial
+
+# Our custom similarity function
+cosine_similarity = lambda x, y: 1 - spatial.distance.cosine(x, y)
+
+king = nlp.vocab['king'].vector
+man = nlp.vocab['man'].vector
+woman = nlp.vocab['woman'].vector
+
+# Now we find the closest vector in the vocabulary to the result of
+# "king" - "man" + "woman"
+new_vector = king - man + woman
+computed_similarities = []
+
+# Visit all words/tokens in the vocabulary
+# and if they have a valid vector, compute the similarity
+for word in nlp.vocab:
+    # Ignore words without vectors and mixed-case words
+    if word.has_vector:
+        if word.is_lower:
+            if word.is_alpha:
+                similarity = cosine_similarity(new_vector, word.vector)
+                computed_similarities.append((word, similarity))
+
+# Sort all similarities by first time, descending
+computed_similarities = sorted(computed_similarities, key=lambda item: -item[1])
+
+# Unfortunately, it does not seem to work that well...
+print([w[0].text for w in computed_similarities[:10]])
+
+```
+
+### 5.2 Sentiment Analysis with VADER: `02_Sentiment_Analysis.ipynb`
+
+This notebook introduces the problem of **sentiment analysis** and shows how to apply it using the NLTK module [VADER](https://www.nltk.org/_modules/nltk/sentiment/vader.html) = Valence Aware Dictionary for sEntiment Reasoning.
+
+We can apply VADER directly to unlabelled text data to obtain the strength of the sentiment in 3 different directions: positive, neutral and negative; all 3 are also compunded toa 4th value:
+
+```python
+{'neg': 0.0, 'neu': 0.425, 'pos': 0.575, 'compound': 0.8877}
+```
+
+In the background, VADER maps lexical features to sentiment scores; the sentiment score of a text is the sum of the sentiment score of each word. Note that:
+- Negation is understood: `did not love` is the opposite `did love`.
+- Exclamation marks, capitals, are taken into account.
+- If a text has both positive and negative parts, the result will be the sum, and maybe that is not intended.
+- Sarcasm is not captured, e.g., positive words intended as. negative.
+
+Note that the VADER model is already prepared for us! We don't need to have a labelled dataset, nor train anything: we just use it! However, the performance is not as good: 60%-70% accuracy, being 50% a pure random guess. That is probably because we have not trained for the dataset and because human communication is very nuanced -- we can say only in the last sentence what we want, we can be sarcastic, etc.
+
+I think that one could build a regression model for sentiment analysis if we had labelled data (e.g., 5-star ratings); also using TFIDF makes sense.
+
+Overview of contents:
+1. NLTK's VADER Module for Sentiment Analysis
+2. Example 1: Amazon Reviews Sentiment Analysis with NLTK-VADER
+    - 2.1 Load and Clean the Data
+    - 2.2 Add Sentiment Scores
+    - 2.3 Check Accuracy
+3. Example 2: Moview Reviews Sentiment Analysis with NLTK-VADER
+    - 3.1 Load and Clean the Data
+    - 3.2 Add Sentiment Scores
+    - 3.3 Check Accuracy
+
+Summary of the most important python commands:
+
+```python
+
+### 1. NLTK's VADER Module for Sentiment Analysis
+
+import nltk
+# Load the VADER lexicon
+nltk.download('vader_lexicon')
+
+# Import the library for Sentiment Analysis that makes use of the previos lexicon
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+sid = SentimentIntensityAnalyzer()
+
+# VADER's SentimentIntensityAnalyzer() takes in a string
+# and returns a dictionary of scores in each of four categories
+# - negative
+# - neutral
+# - positive
+# - compound (computed by normalizing the scores above)
+a = 'This was a good movie.'
+sid.polarity_scores(a) # {'neg': 0.0, 'neu': 0.508, 'pos': 0.492, 'compound': 0.4404}
+
+a = 'This was the best, most awesome movie EVER MADE!!!'
+sid.polarity_scores(a) # {'neg': 0.0, 'neu': 0.425, 'pos': 0.575, 'compound': 0.8877}
+
+a = 'This was the worst film to ever disgrace the screen.'
+sid.polarity_scores(a) # {'neg': 0.477, 'neu': 0.523, 'pos': 0.0, 'compound': -0.8074}
+
+sid.polarity_scores('best') # {'neg': 0.0, 'neu': 0.0, 'pos': 1.0, 'compound': 0.6369}
+sid.polarity_scores('worst') # {'neg': 1.0, 'neu': 0.0, 'pos': 0.0, 'compound': -0.6249}
+
+### 2. Example 1: Amazon Reviews Sentiment Analysis with NLTK-VADER
+
+import numpy as np
+import pandas as pd
+import nltk
+# Load the VADER lexicon
+nltk.download('vader_lexicon')
+# Import the library for Sentiment Analysis that makes use of the previos lexicon
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+sid = SentimentIntensityAnalyzer()
+
+### 2.1 Load and Clean the Data
+
+df = pd.read_csv('../data/amazonreviews.tsv', sep='\t')
+df.head()
+
+# Balanced? Quite.
+df['label'].value_counts()
+
+# Check if empty reviews
+df['review'].isna().sum() + df['review'].isnull().sum()
+
+# Remove if empty reviews
+df.dropna(inplace=True)
+
+# Check for empty strings and remove them
+blanks = []  # start with an empty list
+for i,lb,rv in df.itertuples():  # iterate over the DataFrame
+    if type(rv)==str:            # avoid NaN values
+        if rv.isspace():         # test 'review' for whitespace
+            blanks.append(i)     # add matching index numbers to the list
+df.drop(blanks, inplace=True)
+
+# Still Balanced? Same as before: nothing removed
+df['label'].value_counts()
+
+### 2.2 Add Sentiment Scores
+
+# Check a single review
+sid.polarity_scores(df.loc[0]['review'])
+# Label seems to match
+df.loc[0]['label']
+# Check the review text
+df.loc[0]['review']
+
+# Create new column/feature: predicted sentiment score
+df['scores'] = df['review'].apply(lambda review: sid.polarity_scores(review))
+df.head()
+
+# Take compound value: usually, that's what we take
+df['compound']  = df['scores'].apply(lambda score_dict: score_dict['compound'])
+df.head()
+
+# Binarize
+df['comp_score'] = df['compound'].apply(lambda c: 'pos' if c >=0 else 'neg')
+df.head()
+
+### 2.3 Check Accuracy
+
+from sklearn.metrics import accuracy_score,classification_report,confusion_matrix
+
+# It is not a very good metric: random guesses would yield 50%
+accuracy_score(df['label'],df['comp_score'])
+
+print(classification_report(df['label'],df['comp_score']))
+
+print(confusion_matrix(df['label'],df['comp_score']))
+
+```
+
+## 6. Topic Modeling: `./06_Topic_Modeling`
 

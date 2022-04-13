@@ -4,11 +4,11 @@ A guide on Natural Language Processing (NLP) structured after following the Udem
 
 Note that I would have forked the original repository to add notes, but the material is provided with a download link.
 
-This notes file of mine
+This file of mine
 
 `NLP_Guide.md`
 
-provide a general guide of the course and points out to the different notebooks of each section:
+provides a general guide of the course and points out to the different notebooks of each section:
 
 0. Setup
 1. Python Text Basics: `./01_Python_Text_Basics`

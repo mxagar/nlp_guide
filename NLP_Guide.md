@@ -8,14 +8,14 @@ This notes file of mine
 
 `NLP_Guide.md`
 
-provides a general guide of the course and points out to the different notebooks of each section:
+provide a general guide of the course and points out to the different notebooks of each section:
 
 0. Setup
 1. Python Text Basics: `./01_Python_Text_Basics`
 2. NLP Basics: `./02_Natural_Language_Processing_Basics`
 3. Part of Speech Tagging & Named Entity Recognition: `./03_POS_Tagging_NER`
 4. Text Classification: `04_Text_Classification/`
-5. Semantics and Sentiment Analysis
+5. Semantics and Sentiment Analysis: `05_Semantics_Sentiment_Analysis/`
 6. Topic Modeling
 7. Deep Learning for NLP
 
@@ -31,9 +31,11 @@ conda activate ds
 conda install keras nltk
 conda install -c conda-forge spacy
 # Download dictionaries/models
-python -m spacy download en # spacy.load('en_core_news_sm')
-python -m spacy download es # spacy.load('es_core_news_sm')
-python -m spacy download de # spacy.load('de_core_news_sm')
+python -m spacy download en # spacy.load('en_core_news_sm/trf')
+python -m spacy download en_core_web_md # spacy.load('en_core_news_md')
+python -m spacy download en_core_web_lg # spacy.load('en_core_news_lg')
+python -m spacy download es # spacy.load('es_core_news_sm/trf')
+python -m spacy download de # spacy.load('de_core_news_sm/trf')
 ```
 
 However, a YAML with the requirements to create a new conda environment is provided:
@@ -892,3 +894,6 @@ This notebook is not that interesting; I have added the most important additions
 - Empty text/string detection and removal.
 - Stop words in the text vectorizer.
 - Pipelines with different classifiers: Naive Bayes, Support Vector Machines.
+
+## 5. Semantics and Sentiment Analysis: `05_Semantics_Sentiment_Analysis/`
+

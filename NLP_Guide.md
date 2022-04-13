@@ -60,7 +60,7 @@ dependencies:
 
 ## 1. Python Text Basics: `./01_Python_Text_Basics`
 
-### Working with Text and PDF Files: `01_Text_PDF_Files.ipynb`
+### 1.1 Working with Text and PDF Files: `01_Text_PDF_Files.ipynb`
 
 This notebook presents the basic python commands to open and handle files and the text in them.
 
@@ -84,10 +84,106 @@ Overview of contents:
 Summary of the most important commands:
 
 ```python
+# f-strings
+d = {'a':123,'b':456}
+print(f"Address: {d['a']} Main Street")
+
+# Tuples which represent table rows
+library = [('Author', 'Topic', 'Pages'),
+           ('Twain', 'Rafting', 601),
+           ('Feynman', 'Physics', 95),
+           ('Hamilton', 'Mythology', 144)]
+
+# We print with f-strings, tuple unpacking
+# and minimum width using :{width}
+# Note that we can pass <, > or ^ between :{ for justification
+# and a symbol for filling
+for author, topic, pages in library:
+    print(f'{author:{10}} {topic:{12}} {pages:.>{12}}')
+
+# Datetime object
+from datetime import datetime
+today = datetime(year=2018, month=1, day=27)
+# We can format datetime as we want using the codes.
+# Look at this page to get the codes
+# https://strftime.org/
+print(f'{today:%B %d, %Y}')
+
+# This creates a text file in Jupyter:
+# magic commad %%writefile + filename + contents
+%%writefile test.txt
+Hello, this is a quick test file.
+This is the second line of the file.
+
+# Open the text.txt file we created earlier: it is loaded as a file object
+my_file = open('test.txt')
+
+# We can now read the COMPLETE file: the content is returned as a string.
+# After that, the reading cursor is at the end, and we can't read anymore.
+my_file.read()
+
+# Set cursor to index position 0 = start
+# After that, we can read() th complete text again
+my_file.seek(0)
+
+# readlines() returns a list of the lines in the file: very practical!
+my_file.seek(0)
+mylines = my_file.readlines()
+for line in mylines:
+    print(line)
+
+# Always close the opened files
+# otherwise if a file is opened by several processes we could get problems
+my_file.close()
+
+# Add a second argument to the function, 'w' which stands for write.
+# Passing 'w+' lets us read (+) and write (w) to the file.
+# Use TAB to access the docs
+# HOWEVER: 'w' removes any content in the file automatically!
+my_file = open('test.txt','w+')
+
+# Write to the file
+my_file.write('This is a new first line')
+my_file.close()
+
+# Passing 'a+' lets us read (+) and append (a) to the file.
+# Cursor is set at the end of the file
+my_file = open('test.txt','a+')
+# We need to addd line breaks manually!
+my_file.write('\nThis line is being appended to test.txt')
+my_file.write('\nAnd another line here.')
+my_file.close()
+
+# Iterating through a file
+with open('test.txt','r') as txt:
+    for line in txt:
+        print(line, end='')  # the end='' argument removes extra linebreaks
+
+# We can use the library PyPDF2 to open PDF files
+# however, not all PDF files are always readable.
+# To install it: pip install PyPDF2
+import PyPDF2
+
+f = open('US_Declaration.pdf','rb')
+# List of every page's text.
+# The index will correspond to the page number.
+pdf_text = [0]  # zero is a placehoder to make page 1 = index 1
+# Create PDF reader
+pdf_reader = PyPDF2.PdfFileReader(f)
+# Extract text page by page
+for p in range(pdf_reader.numPages):
+    page = pdf_reader.getPage(p)
+    pdf_text.append(page.extractText())
+# Close file
+f.close()
+
+len(pdf_text)
+# Print page 1
+print(pdf_text[1])
 
 ```
 
-### Regular Expressions: `02_Regular_Expressions.ipynb`
+### 1.2 Regular Expressions: `02_Regular_Expressions.ipynb`
 
 This notebook introduces the basics of regular expression searching; functions, identifiers and examples are presented.
 
@@ -105,9 +201,106 @@ Overview of contents:
     - 2.8 Parenthesis for Multiple Options
     - 2.9 Example: Find Emails
 
+**Indentifiers and Quantifiers for Regex**:
+![Identifiers and Quantifiers for Regex](./pics/identifiers_quantifiers.png)
+
+Summary of the most important commands:
+
+```python
+# Python native library for regular expressions
+import re
+
+# Example text
+text = "The agent's phone number is 408-555-1234. Call soon!"
+pattern = 'phone'
+
+# We always search a pattern in the text
+# which returns a match object with a lot of methods & atttributes
+match = re.search(pattern,text)
+
+match.span() # (12, 17)
+match.start() # 12
+match.end() # 17
+# Get the found text
+# In this case it's trivial, but if we use regular expression patterns
+# we don't know the actual found text string
+match.group() # 'phone'
+
+# Several match objects
+text = "my phone is a new phone"
+pattern = 'phone'
+for match in re.finditer(pattern,text):
+    print(match.span()) # (3, 8), (18, 23)
+
+# To just find the pattern without the return match object
+# It makes sense when we use patterns
+re.findall(pattern,text) # ['phone', 'phone']
+
+text = "My telephone number is 408-555-1234"
+pattern = r'\d\d\d-\d\d\d-\d\d\d\d'
+phone = re.search(pattern,text)
+# With patterns, we don't really know the content found
+# We can access it with group()
+phone.group() # '408-555-1234'
+
+# Quantifiers: when an identifier repeats,
+# we put its number in curly braces
+phone = re.search(r'\d{3}-\d{3}-\d{4}',text)
+phone.group() # '408-555-1234'
+
+# We can group pattern parts in () inside their definition
+phone_pattern = re.compile(r'(\d{3})-(\d{3})-(\d{4})')
+results = re.search(phone_pattern,text)
+# The entire result
+results.group() # '408-555-1234'
+# Can then also call by group position.
+# remember groups were separated by parentheses ()
+# Something to note is that group ordering starts at 1.
+# Passing in 0 returns everything
+results.group(1) # '408'
+
+# OR Statements
+re.search(r"man|woman","This man was here.")
+
+# Wildcards
+re.findall(r".at","The cat in the hat sat here.") # ['cat', 'hat', 'sat']
+
+# One or more non-whitespace that ends with 'at'
+re.findall(r'\S+at',"The bat went splat") # ['bat', 'splat']
+
+# Ends with: $
+# Ends with a number
+re.findall(r'\d$','This ends with a number 2') # ['2']
+
+# Starts with: ^
+# Starts with a number
+re.findall(r'^\d','1 is the loneliest number.') # ['1']
+
+# Exclusion
+# We can use this to remove punctuation from a sentence
+test_phrase = 'This is a string! But it has punctuation. How can we remove it?'
+re.findall('[^!.? ]+',test_phrase)
+clean = ' '.join(re.findall('[^!.? ]+',test_phrase))
+
+# Brackets for Grouping (Words): []+
+text = 'Only find the hypen-words in this sentence. But you do not know how long-ish they are'
+# We want to find words with a hyphen
+# [\w]+: any number of alphanumeric characters
+re.findall(r'[\w]+-[\w]+',text) # ['hypen-words', 'long-ish']
+
+# Multiple options
+text = 'Hello, would you like some catfish?'
+re.search(r'cat(fish|nap|claw)',text)
+
+# Example: Find emails
+text = "This is a nice email: name@service.com"
+re.findall(r'\w+@\w+.\D{3}',text) # ['name@service.com']
+
+```
+
 ## 2. Natural Language Processing Basics: `02_Natural_Language_Processing_Basics/`
 
-### Spacy Basics: `01_Spacy_Basics.ipynb`
+### 2.1 Spacy Basics: `01_Spacy_Basics.ipynb`
 
 The two main NLP libraries we are going to use are **Spacy** and **NLTK**.
 
@@ -137,7 +330,78 @@ Overview of contents in the notebook:
 2. Tokens and Their Attributes
 3. Spans (Slices of Docs) and Sentences
 
-### Tokenization: `02_Tokenization.ipynb`
+Summary of the most important commands (**very important summary**, some lines added from later notebooks):
+
+```python
+import spacy
+# We load our English _model_
+nlp = spacy.load('en_core_web_sm')
+
+# Create a _Doc_ object:
+# the nlp model processes the text 
+# and saves it structured in the Doc object
+# u: Unicode string (any symbol, from any language)
+doc = nlp(u'Tesla is looking at buying U.S. startup for $6 million')
+
+# Print each token separately
+# Tokens are word representations, unique elements
+# Note that spacy does a lot of identification work already
+# $ is a symbol, U.S. is handled as a word, etc.
+for token in doc:
+    # token.text: raw text
+    # token.pos_: part of speech: proper noun, verb, ... (MORPHOLOGY)
+    # token.dep_: subject, etc., syntactic dependency (SYNTAXIS)
+    # token.lemma_: base form of the word
+    # token.tag_: detailed part-of-speech tag
+    print(token.text, token.pos_, token.dep_)
+
+# The Doc object contains the processed text
+# To see how it is processed, we can show the pipeline used
+nlp.pipeline
+
+# We can get the basic names of the steps in the pipeline
+nlp.pipe_names
+
+# Get first token
+doc[0] # Tesla
+
+spacy.explain('PROPN') # 'proper noun'
+spacy.explain('nsubj') # 'proper noun'
+
+doc = nlp(u'This is the first sentence. This is another sentence. This is the last sentence.')
+w = doc[6]
+w.is_sent_start # True
+
+# Access sentences
+for sent in doc4.sents:
+    print(sent)
+
+# Named Entities
+doc = nlp(u'Apple to build a Hong Kong factory for $6 million')
+# Named entities can be accessed through .ents
+# Named entities are: companies, place names, money amounts, etc.
+# Apple, Hong Kong, $6 million
+for ent in doc.ents:
+    print(ent.text+' - '+ent.label_+' - '+str(spacy.explain(ent.label_)))
+
+# Noun chunks
+doc = nlp(u"Autonomous cars shift insurance liability toward manufacturers.")
+# Access all noun chunks
+for chunk in doc.noun_chunks:
+    print(chunk.text) # Autonomous cars, insurance liability, manufacturers
+
+from spacy import displacy
+doc = nlp(u'Apple is going to build a U.K. factory for $6 million.')
+
+# Syntactic dependency display of the Doc
+displacy.render(doc, style='dep', jupyter=True, options={'distance': 110})
+
+# Entity display
+displacy.render(doc, style='ent', jupyter=True)
+
+```
+
+### 2.2 Tokenization: `02_Tokenization.ipynb`
 
 Tokenization is the process of breaking down the raw text into component pieces or tokens. Tokens have an identified meaning; they are often words, but might be also spaces, punctuation, negation particles, etc. -- because all those have also an identifiable meaning!
 
@@ -161,7 +425,9 @@ Overview of contents:
 4. Noun Chunks = Sintagma Nominal
 5. Visualizers: Syntatic Dependencies & Entities
 
-### Stemming: `03_Stemming.ipynb`
+Summary of the most important commands: Nothing new to add here, since the most important commands are covered in the basics notebook.
+
+### 2.3 Stemming: `03_Stemming.ipynb`
 
 Once we have broken down the text into separate tokens, the next step in NLP is **stemming**, which consists in extracting the base form of each token. A word can have many variations; we call **stem** to the original or root form without variations. For example:
 
@@ -188,7 +454,9 @@ Overview of contents:
 1. Porter Stemmer
 2. Snowball Stemmer
 
-### Lemmatization: `04_Lemmatization.ipynb`
+Summary of the most important commands: Look at the notebook; probably, that's not so important, because lemmas from Spacy can be used instead.
+
+### 2.4 Lemmatization: `04_Lemmatization.ipynb`
 
 Beyond shortening the word as when we do stemming, lemmatization tracks the original word with its context to apply morphological analysis; for instance:
 
@@ -199,11 +467,41 @@ Lemmatization is much more informative and advanced, and that is the reason spac
 
 Lemmas can be accessed via `token.lemma_`, nothing additional needs to be done!
 
-### Stop Words: `05_StopWords.ipynb`
+Summary of the most important commands: Nothing new here, since the most important commands are in the basics notebook.
+
+
+### 2.5 Stop Words: `05_StopWords.ipynb`
 
 **Stop words** are really common words that don't give any additional information; therefore, they are usually removed from the text. Each language has its built-in list; in English, spacy has 326 stop words. Also, we can remove or add words from/to the list; however, the list is not saved when we exit.
 
-### Vocabulary and Matching: `06_Vocabulary_Matching.ipynb`
+Summary of the most important commands:
+
+```python
+import spacy
+nlp = spacy.load('en_core_web_sm')
+
+# Print the set of SpaCy's default stop words (remember that sets are unordered)
+print(nlp.Defaults.stop_words)
+
+len(nlp.Defaults.stop_words) # 326
+
+# Check is a word is a stop word
+nlp.vocab['myself'].is_stop # False
+
+# Add the word to the set of stop words
+# Use lowercase!
+nlp.Defaults.stop_words.add('btw')
+# Additionally, we need to set the stop_word tag on the lexeme
+nlp.vocab['btw'].is_stop = True
+
+# Remove a stop word
+nlp.Defaults.stop_words.remove('beyond')
+# Remove the stop_word tag from the lexeme
+nlp.vocab['beyond'].is_stop = False
+
+```
+
+### 2.6 Vocabulary and Matching: `06_Vocabulary_Matching.ipynb`
 
 This notebook shows how tokens of groups of tokens can be found/matched in a text. It is equivalent to applying regex, but dictionaries are used instead, making the process more powerful and probably less cryptic.
 
@@ -212,9 +510,11 @@ Overview of contents:
     - 1.1 Pattern Options and Further Keys
 2. Phrase Matching: same as before, but applied to group of words (i.e., phrases), not just single tokens.
 
+Summary of the most important commands: Look at the notebook, it is very specific.
+
 ## 3. Part-of-Speech (POS) Tagging an Named Entity Recognition (NER): `03_POS_Tagging_NER/`
 
-### Part of Speech (POS) Tagging: `01_PartOfSpeech_Tagging.ipynb`
+### 3.1 Part of Speech (POS) Tagging: `01_PartOfSpeech_Tagging.ipynb`
 
 NLP can be significanly improved if the morphological information of the words that compose the text is used. That morphological information is encoded in the *part-of-speech* tags of the tokens, which can be accessed via:
 
@@ -230,7 +530,30 @@ Overview of contents:
 3. Counting POS & DEP Classes: Frequency Lists
 4. Visualizing Parts-of-Speech (POS)
 
-### Named Entity Recognition: `02_Named_Entity_Recognition.ipynb`
+Summary of the most important commands (look also at the basics notebook):
+
+```python
+# Counting POS & DEP Classes: Frequency Lists
+doc = nlp(u"The quick brown fox jumped over the lazy dog's back.")
+# Count the frequencies of different coarse-grained POS tags
+# The recipy doc.count_by(spacy.attrs.POS) works for any kind of tag: pos, dep, tag, etc.
+POS_counts = doc.count_by(spacy.attrs.POS)
+for k,v in sorted(POS_counts.items()):
+    print(f'{k}. {doc.vocab[k].text:{5}}: {v}')
+
+# Count the different fine-grained tags
+TAG_counts = doc.count_by(spacy.attrs.TAG)
+for k,v in sorted(TAG_counts.items()):
+    print(f'{k}. {doc.vocab[k].text:{4}}: {v}')
+
+# Count the different dependencies
+DEP_counts = doc.count_by(spacy.attrs.DEP)
+for k,v in sorted(DEP_counts.items()):
+    print(f'{k}. {doc.vocab[k].text:{4}}: {v}')
+
+```
+
+### 3.2 Named Entity Recognition: `02_Named_Entity_Recognition.ipynb`
 
 This notebook deals with the recognition of **named entities**.
 
@@ -258,7 +581,69 @@ Overview of contents:
 4. Counting Named Entities
 5. Visualizing Named Entities
 
-### Sentence Segmentation: `03_Sentence_Segmentation.ipynb`
+Summary of the most important commands (look also at the basics notebook):
+
+```python
+import spacy
+nlp = spacy.load('en_core_web_sm')
+
+# Write a function to display basic entity info
+def show_ents(doc):
+    if doc.ents:
+        for ent in doc.ents:
+            print(ent.text+' - '+ent.label_+' - '+str(spacy.explain(ent.label_)))
+    else:
+        print('No named entities found.')
+
+# Adding Single Term Entities
+doc = nlp(u'Tesla to build a U.K. factory for $6 million') # Tesla missing
+from spacy.tokens import Span
+# Get the hash value of the ORG entity label
+# Look at the list provided above or in the docs
+ORG = doc.vocab.strings[u'ORG']  
+# Create a Span for the new entity
+# doc - the name of the Doc object
+# 0 - the start index position of the span
+# 1 - the stop index position (exclusive)
+# label=ORG - the label assigned to our entity
+new_ent = Span(doc, 0, 1, label=ORG)
+# Add the entity to the existing Doc object (we can also use append())
+doc.ents = list(doc.ents) + [new_ent]
+
+# Adding Entities with Several Terms: Phrases
+# We want to add the two variations or "vacuum cleaner" as PRODUCT entities
+doc = nlp(u'Our company plans to introduce a new vacuum cleaner. '
+          u'If successful, the vacuum cleaner will be our first product.')
+# To that end, we need to match the variations in the Doc
+# Import PhraseMatcher and create a matcher object
+from spacy.matcher import PhraseMatcher
+matcher = PhraseMatcher(nlp.vocab)
+# Create the desired phrase patterns
+phrase_list = ['vacuum cleaner', 'vacuum-cleaner']
+phrase_patterns = [nlp(text) for text in phrase_list]
+# Apply the patterns to our matcher object
+matcher.add('newproduct', None, *phrase_patterns)
+# Apply the matcher to our Doc object
+matches = matcher(doc)
+# See what matches occur
+matches
+# Here we create Spans from each match, and create named entities from them
+from spacy.tokens import Span
+# Create the label (look at the provided list above/docs)
+PROD = doc.vocab.strings[u'PRODUCT']
+# New entities, created with list comprehension
+new_ents = [Span(doc, match[1],match[2],label=PROD) for match in matches]
+# Don't forget updating the list of entities (equiv. to append())
+doc.ents = list(doc.ents) + new_ents
+show_ents(doc)
+
+# Counting Named Entities
+doc = nlp(u'Originally priced at $29.50, the sweater was marked down to five dollars.')
+len([ent for ent in doc.ents if ent.label_=='MONEY']) # 2
+
+```
+
+### 3.3 Sentence Segmentation: `03_Sentence_Segmentation.ipynb`
 
 Spacy does a great job in segmenting standard sentences separated with `.`. These can be accessed with the generator `doc.sents`, which provides lists of tokens between basedon the flag `token.is_sent_start`.
 
@@ -273,9 +658,11 @@ Overview of contents:
 2. Adding New Sentence Segmentation Rules
 3. Changing Sentence Segmentation Rules (missing section, because code didn't work for my spacy lib version)
 
+Summary of the most important commands: look at the notebook (also the basics notebook/summary).
+
 ## 4. Text Classification: `04_Text_Classification/`
 
-### Introduction to Scikit Learn and ML Concepts: `00_ScikitLearn_Intro.ipynb`
+### 4.1 Introduction to Scikit Learn and ML Concepts: `00_ScikitLearn_Intro.ipynb`
 
 This notebook is a brief introduction to Machine Learning and Sckit-Learn. We are going to work on the [SMS Spam Dataset @ UCI](https://archive.ics.uci.edu/ml/datasets/SMS+Spam+Collection) as a starter to check the basic ML pipeline with Scikit-Learn. The dataset labels an SMS text as `spam` or `ham`.
 
@@ -301,7 +688,9 @@ Overview of contents:
         - Support Vector Machines: Model Training
         - Support Vector Machines: Model Metrics / Evaluation
 
-### Text Feature Extraction: `01_Text_Feature_Extraction.ipynb`
+Notebook: this notebook code is not interesting in the context of NLP; it is a basic introduction to Scikit-Learn and ML. Have a look at the next notebook, it is much more interesting.
+
+### 4.2 Text Feature Extraction: `01_Text_Feature_Extraction.ipynb`
 
 This document explains the basics of text vectorization using TFIDF.
 
@@ -336,7 +725,156 @@ Overview of contents:
    - 2.6 Evaluate the Pipeline/Model
    - 2.7 Inference
 
-### Text Classification Project: `02_Text_Classification_Project.ipynb`
+Summary of the most important commands (**very important summary**, lines added from next notebook):
+
+```python
+
+### 1. Manual Creation of Bags-of-Words
+# This is a vanilla manual creation of vocabularies and bags or words. Not done in practice, since we use scikit-learn functionalities.
+
+text1 = """This is a story about cats
+        our feline pets
+        Cats are furry animals
+        """
+text2 = """This story is about surfing
+        Catching waves is fun
+        Surfing is a popular water sport
+        """
+texts = [text1, text2]
+
+# Build vocabulary (dictionary)
+vocab = {}
+i = 1
+for text in texts:
+    x = text.lower().split()
+    for word in x:
+        if word in vocab:
+            continue
+        else:
+            vocab[word]=i
+            i+=1
+print(vocab)
+
+# Extract features
+one = ['text1']+[0]*len(vocab)
+two = ['text2']+[0]*len(vocab)
+bow = [one, two]
+i = 0
+for text in texts:
+    x = text.lower().split()
+    for word in x:
+        bow[i][vocab[word]] += 1
+    i += 1
+
+
+### 2. Text Feature Extraction with Scikit-Learn
+
+## 2.1 Load Dataset and Explore It
+
+import numpy as np
+import pandas as pd
+df = pd.read_csv('../data/smsspamcollection.tsv', sep='\t')
+df.head()
+# Check missing values
+df.isnull().sum()
+# We need to remove NULL items
+df.dropna(inplace=True)
+len(df)
+# Sometimes empty item texts are filled with spaces
+# We need to manually check them in a for-loop
+blanks = []  # start with an empty list
+for i,lb,tx in df.itertuples():  # iterate over the DataFrame
+    if type(tx)==str:            # avoid NaN values
+        if tx.isspace():         # test 'review' for whitespace
+            blanks.append(i)     # add matching index numbers to the list
+print(len(blanks), 'blanks: ', blanks)
+# Remove blank entries
+df.drop(blanks, inplace=True)
+# Final number of items
+len(df)
+# Check target: balanced? No
+df['label'].value_counts()
+
+##  2.2 Train/Test Split
+
+from sklearn.model_selection import train_test_split
+X = df['message']  # this time we want to look at the text
+y = df['label']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+
+##  2.3 Vectorization
+
+##  2.3.1 Document Term Matrix: `CountVectorizer`
+from sklearn.feature_extraction.text import CountVectorizer
+# Class that creates the Document Term Matrix
+count_vect = CountVectorizer()
+# Fit the class-object to the training split and transform the split
+X_train_counts = count_vect.fit_transform(X_train)
+# Vocabulary size: columns (number of features)
+X_train_counts.shape
+
+##  2.3.2 Term Frequency Inverse Document Frequency: `TfidVectorizer`
+from sklearn.feature_extraction.text import TfidfVectorizer
+# Class that created the Document Term Matrix to be filled in with TFIDF values
+vectorizer = TfidfVectorizer()
+# Fit training split and transform it
+X_train_tfidf = vectorizer.fit_transform(X_train) # remember to use the original X_train set
+X_train_tfidf.shape
+
+##  2.4 Model: Definition and Training
+
+from sklearn.svm import LinearSVC
+clf = LinearSVC() # classifier: clf
+clf.fit(X_train_tfidf,y_train)
+
+##  2.5 Build a Pipeline
+# Since in NLP all texts need to be pre-processed and vectorized, it is very common to create Pipelines in which we define all transformations required
+# Actually, since we need to deploy our application, every ML project should be packed into similar Pipeline objects.
+# We can use any classifier here: Support Vector Machines, Naive Bayes, etc.
+# When building our Pipeline, we can pass the stop words to the TfidfVectorizer:
+# - TfidVectorizer(stop_words='english') to accept scikit-learn's built-in list,
+# - or TfidVectorizer(stop_words=[a, and, the]) to accept a custom list.
+
+# List of default stop words in scikit-learn
+from sklearn.feature_extraction import text
+print(text.ENGLISH_STOP_WORDS)
+
+from sklearn.pipeline import Pipeline
+# from sklearn.feature_extraction.text import TfidfVectorizer
+# from sklearn.svm import LinearSVC
+# from sklearn.naive_bayes import MultinomialNB
+
+text_clf = Pipeline([('tfidf', TfidfVectorizer(stop_words='english')),
+                     #('clf', MultinomialNB()),
+                     ('clf', LinearSVC()),
+])
+
+# Now, we can pass the raw dataset
+text_clf.fit(X_train, y_train)  
+
+##  2.6 Evaluate the Pipeline/Model
+
+# Form a prediction set
+predictions = text_clf.predict(X_test)
+# Report the confusion matrix
+# It performs much better than before!
+from sklearn import metrics
+print(metrics.confusion_matrix(y_test,predictions))
+# Print a classification report
+print(metrics.classification_report(y_test,predictions))
+# Print the overall accuracy
+print(metrics.accuracy_score(y_test,predictions))
+
+##  2.7 Inference
+
+# HAM
+text_clf.predict(["Hi, how are you doing?"])
+# SPAM
+text_clf.predict(["Congratulations! You've been selected as a winner. Send a message to 1-800-123-2345."])
+
+```
+
+### 4.3 Text Classification Project: `02_Text_Classification_Project.ipynb`
 
 This notebook shows how to perfom text classification by applying bags-of-words and TFIDF. The [Movie Review Dataset from Cornell](https://www.cs.cornell.edu/people/pabo/movie-review-data/) is used. Nothing new is shown here, just a more complex example than in previous notebook.
 
@@ -348,3 +886,9 @@ Overview of contents:
 4. Evaluate Pipelines
     - 4.1 Naive Bayes
     - 4.2 Support Vector Machines
+
+This notebook is not that interesting; I have added the most important additions to the previous one:
+
+- Empty text/string detection and removal.
+- Stop words in the text vectorizer.
+- Pipelines with different classifiers: Naive Bayes, Support Vector Machines.

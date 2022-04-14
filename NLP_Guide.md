@@ -1166,3 +1166,5 @@ print(confusion_matrix(df['label'],df['comp_score']))
 
 ## 6. Topic Modeling: `./06_Topic_Modeling`
 
+### 6.1 Topic Modeling: Latent Dirichlet Allocation (LDA): `01_Latent_Dirichlet_Allocation.ipynb`
+

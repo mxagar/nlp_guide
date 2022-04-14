@@ -1168,3 +1168,162 @@ print(confusion_matrix(df['label'],df['comp_score']))
 
 ### 6.1 Topic Modeling: Latent Dirichlet Allocation (LDA): `01_Latent_Dirichlet_Allocation.ipynb`
 
+This notebook introduces the concept of **Latent Dirichlet Allocation (LDA)**, which is an essential unsupervised learning technique to approach **topic modeling**.
+
+In topic modeling, we typically have large amounts of **unlabeled** data/text (corpus) divided in many documents. The goal is to cluster those documents into topic-groups, which need to be discovered, i.e., we don't know the topic contents, since they are to be detected by the approach.
+
+The [LDA](https://en.wikipedia.org/wiki/Latent_Dirichlet_allocation) approach was published in 2003 by Blei, Ng & Jordan:
+
+`../literature/BleiNgJordan_LDA_2003.pdf`
+
+The method uses the [Dirichlet distribution](https://en.wikipedia.org/wiki/Dirichlet_distribution), hence the name -- not that they invented the distirbution. The Dirichlet distribution is a multivariate distribution with the property that the sum of all its variables needs to be 1.
+
+These **assumptions** are done in LDA:
+
+- Documents with similar topics use similar groups of words.
+- Latent topics can be found by searching for groups of words that frequently occur together in the documents.
+
+These assumptions are translated into probability distributions:
+
+- Documents are probability distributions over `K` latent topics; these latent topics are like bins, and for each document, the weight of dealing with any of the topics is discovered.
+- Topics are probability distributions over words. The idea is anallogous to the previous point. In practice, once the topic has been discovered, we check the top-10 words from its topic-word distribution and infer what the theme is.
+
+![LDA Topic-Document-Word Distributions](./pics/LDA_distributions.png)
+
+LDA starts working as follows:
+
+- We have `M` documents, each document `d` with `N_d` words in it, from a corpus vocabulary consisting of `W` words.
+- We set a fixed amount of latent topics `K` that are going to be discrovered, as the number of clusters in K-means; e.g., `K = 50`.
+- We assign (randomly) to each document the weights/percentages associated to each topic: `alpha_k`, `k = 1:K`, `sum(alpha_k) = 1`.
+- From the random assignment done for document-topics, we get the topic weights/percentages associated to each word: `beta_w`, `w = 1:W`, `sum(beta_w) = 1`.
+
+Notes on the initialization:
+- The LDA approach assumes that the documents are generated following the points below; although it's not true, it's a useful construct that.
+- The first assignment does not make any sense, but we iterate to improve it.
+
+Once we have performed the initialization, the optimization algorithm works as follows:
+1. We iterate over every **word** in every **document**, and for each **topic** we compute:
+    - `p(topic k | document d) = proportion of words in document d that are assigned to topic k`.
+    - `p(word w | topic k) = proportion of assignments to topic k over all documents that contain/come this/from word w`.
+2. We re-assign each **word** a new **topic**, where we choose topic k with this probability:
+    - `p(topic k | document d) * p(word w | topic k): probability that topic k is generated from word w`.
+    - Document topics are re-computed after the re-assignment of word-topic probabilities.
+3. We repeat these steps 1 & 2 enough times until we reach a steady state.
+
+Note that before applying anything it is convenient to (1) remove stop-words and (2) reduce the tokens/words to a base form using stemming or lemmatization. Additionally, the basis data structure it is worked on is the Document-Term matrix (DTM), obtained with `CountVectorizer` from scikit-learn.
+
+Overview of contents:
+
+1. Load the Dataset
+2. Create a Document-Term Matrix (DTM) and Fit the Latent Dirichlet Allocation (LDA) Model to It
+3. Explore the Discovered Topics
+4. Assign Topics to Articles
+
+Summary of the most important python commands:
+
+```python
+
+### 1. Load the Dataset
+
+import pandas as pd
+# Load the NPR dataset: around 12k articles; we want to discover and assign topics
+npr = pd.read_csv('../data/npr.csv')
+npr.shape # (11992, 1)
+npr.head()
+# Text of an article i
+i = 10
+print(npr["Article"][i])
+
+### 2. Create a Document-Term Matrix (DTM) and Fit the Latent Dirichlet Allocation (LDA) Model to It
+
+from sklearn.feature_extraction.text import CountVectorizer
+
+# Important parameters of CountVectorizer
+# max_df: When building the vocabulary 
+#   ignore terms that have a document frequency strictly higher than the given threshold,
+#   i.e., corpus-specific stop words.
+#   If float, the parameter represents a proportion of documents, integer absolute counts.
+# min_df: When building the vocabulary
+#   ignore terms that have a document frequency strictly lower than the given threshold.
+#   This value is also called cut-off in the literature.
+#   If float, the parameter represents a proportion of documents, integer absolute counts
+# Stop words: we remove them
+cv = CountVectorizer(max_df=0.95, min_df=2, stop_words='english')
+
+# We build the Document-Term Matrix
+# We can't do any split, because that's unsupervised learning!
+dtm = cv.fit_transform(npr['Article'])
+
+from sklearn.decomposition import LatentDirichletAllocation
+# Latent Dirichlet Allocation
+# n_components: number of topics
+LDA = LatentDirichletAllocation(n_components=7,random_state=42)
+# We fit Latent Dirichlet Allocation model to our Document-Term Matrix
+# This can take awhile, we're dealing with a large amount of documents!
+LDA.fit(dtm)
+
+### 3. Explore the Discovered Topics
+
+# Get all words in the DTM, i.e., our vocabulary
+len(cv.get_feature_names_out()) # 54777
+
+# Explore some of those vocabulary words
+import random
+for i in range(10):
+    random_word_id = random.randint(0,54776)
+    print(cv.get_feature_names()[random_word_id])
+
+# Matrix with topic-word weights/probabilities: topics x words
+LDA.components_.shape # (7, 54777)
+
+# Take a single topic k
+k = 0
+single_topic = LDA.components_[k]
+
+# Get indices that sort this array: [0.9 0.7 0.3] -> [2 1 0]
+# These are the word indices ordered according to their weight for topic k
+# Watch out the order: ascending (default) / descending
+single_topic.argsort()
+
+# Get the 15 most significant words
+# We can see how we could assign topics/themes:
+# 1: Economy & Finances
+# 2: Military and Security Affairs
+# 3: Family & Resouces
+# 4: Health
+# 5: Politics and Elections
+# 6: Lifestyle
+# 7: Education
+for index,topic in enumerate(LDA.components_):
+    print(f'THE TOP 15 WORDS FOR TOPIC #{index+1}')
+    print([cv.get_feature_names()[i] for i in topic.argsort()[-15:]])
+    print('\n')
+
+### 4. Assign Topics to Articles
+
+# In order to assign a topic to each article, we need to combine
+# - the DTM matrix: articles x words
+# - the LDA weights: topics x words
+# A weighted multiplication yields the desired matrix:
+# (articles x topics) <- (articles x words) x (words x topics)
+topic_results = LDA.transform(dtm)
+
+dtm.shape # (11992, 54777)
+LDA.components_.shape # (7, 54777)
+topic_results.shape # (11992, 7)
+
+# Topic weights / probabilities of a single article
+d = 0
+topic_results[d].round(2) # array([0.02, 0.68, 0.  , 0.  , 0.3 , 0.  , 0.  ])
+# Topic index with the highest probability / weight
+topic_results[0].argmax() # 1
+
+# Create new column with most probable topic index per article
+npr['Topic'] = topic_results.argmax(axis=1)
+npr.head()
+
+```
+
+### 6.2 Topic Modeling: Non-Negative Matrix Factorization (NNMF): `02_NonNegative_Matrix_Factorization.ipynb`
+
+

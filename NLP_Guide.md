@@ -1166,7 +1166,16 @@ print(confusion_matrix(df['label'],df['comp_score']))
 
 ## 6. Topic Modeling: `./06_Topic_Modeling`
 
+Topic modeling consists in discovering the topics in a corpus of text documents and assigning topic probabilities to each document. Two unsuppervised learning methods that achieve that are discussed in the course:
 
+- Latent Dirichlet Allocation
+- Non-Negative Matrix Factorization
+
+The first one refines iteratively topic-word-document distributions, given an initial Document-Term matrix (DTM) that collects word counts per document.
+
+The second one is the collaborative filtering approach used in recommender systems: the normalized DTM is factorized into a lower rank matrix product.
+
+In both cases, the user selects a number of latent topics `K`. With that parameter, topics are discovered and both documents and words associated with them.
 
 ### 6.1 Topic Modeling: Latent Dirichlet Allocation (LDA): `01_Latent_Dirichlet_Allocation.ipynb`
 

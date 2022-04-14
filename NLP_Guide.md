@@ -1166,6 +1166,8 @@ print(confusion_matrix(df['label'],df['comp_score']))
 
 ## 6. Topic Modeling: `./06_Topic_Modeling`
 
+
+
 ### 6.1 Topic Modeling: Latent Dirichlet Allocation (LDA): `01_Latent_Dirichlet_Allocation.ipynb`
 
 This notebook introduces the concept of **Latent Dirichlet Allocation (LDA)**, which is an essential unsupervised learning technique to approach **topic modeling**.
@@ -1326,4 +1328,80 @@ npr.head()
 
 ### 6.2 Topic Modeling: Non-Negative Matrix Factorization (NNMF): `02_NonNegative_Matrix_Factorization.ipynb`
 
+This notebook shows how topic discovery and assignment can be done using **non-negative matrix factorization (NNMF)**. The idea is equivalent to **collaborative filtering applied in recommender systems**.
 
+For an introduction to recommender systems with matrix factorization:
+- Visit my [Github guide](https://github.com/mxagar/machine_learning_coursera/tree/main/07_Anomaly_Recommender) done after following the Coursera/Stanford course [Machine Learning](https://www.coursera.org/learn/machine-learning) by Andrew Ng.
+- Have a look at the summary notes in `./RecommenderSystems_Notes.pdf`
+
+The key idea is that a Matrix `A (n x m)` is decomposed as the mulziplication of lower rank matrices `W (n x k)` and `H (k x m)`, such that the difference `A - W*H` is minimum accross all elements; i.e., ideally `A = W*H`.
+
+![Matrix Factorization](../pics/nnmf_decompostion.png)
+
+The elements in the equations are the following:
+
+- `A` is the Document-Term Matrix (data: vectorized documents)
+    - `n` (rows): documents
+    - `m` (cols): words
+- `k`: latent topics, number chosen by us
+- `W`: `documents x topics`; unknown topic weights/probabilities associated to each document, initialized with random values, to be discovered
+- `H`: `topics x words`; unknown topic weights/probabilities associated to each word, initialized with random values, to be discovered
+
+I think that the main differences with recommender systems are:
+
+- Now, we have a full matrix `A`, no missing values are present.
+- The number of words in the vocabulary is expected to be much larger than the number of movies.
+
+Apart from that, the cost to be minimized is equivalent to the one seen in recommender systems, and the values of `W` and `H` are updated similarly:
+
+$$ \min{J} = \min \frac{1}{2} \Vert A - WH \Vert = \min \frac{1}{2} \sum_{i = 1}^{n} \sum_{j = 1}^{m} (A_{ij} - (WH)_{ij})^{2}$$
+
+Note that in practice, this notebook is almost equivalent to the previous one, dealing with Latent Dirichlet Allocation, being the differences:
+
+- The TFIDF matrix is computed with `TfidfVectorizer` instead of the DTM (with `TfidfVectorizer`). I understand that setting a maximum value for each document-word pair is a condition for matrix fatorization, as the 5 stars maximum in movie reviews.
+- The non-negative matrix decomposition from scikit-learn `NMF` is used on the `TfidfVectorizer` matrix, instead of the `LatentDirichletAllocation`.
+
+Thus, read the previous notebook first and then have a look at this one.
+
+Overview of contents:
+
+1. Load the Dataset
+2. Create a IFIDF Matrix and Fit the Non-Negative Matrix Factorization (NNMF) Model to It
+3. Explore the Discovered Topics
+4. Assign Topics to Articles
+
+Summary of the python code differences compared to the LDA notebook (previous section):
+
+```python
+
+### 2. Create a IFIDF Matrix and Fit the Non-Negative Matrix Factorization (NNMF) Model to It
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+# Important parameters of TfidfVectorizer
+# max_df: When building the vocabulary 
+#   ignore terms that have a document frequency strictly higher than the given threshold,
+#   i.e., corpus-specific stop words.
+#   If float, the parameter represents a proportion of documents, integer absolute counts.
+# min_df: When building the vocabulary
+#   ignore terms that have a document frequency strictly lower than the given threshold.
+#   This value is also called cut-off in the literature.
+#   If float, the parameter represents a proportion of documents, integer absolute counts
+# Stop words: we remove them
+tfidf = TfidfVectorizer(max_df=0.95, min_df=2, stop_words='english')
+
+# We build the Document-Term Matrix
+# We can't do any split, because that's unsupervised learning!
+dtm = tfidf.fit_transform(npr['Article'])
+
+from sklearn.decomposition import NMF
+
+# Non-Negative Matrix Factorization
+# n_components: number of topics
+nmf_model = NMF(n_components=7,random_state=42)
+
+# We fit NMF model to our Document-Term Matrix
+# This can take awhile, we're dealing with a large amount of documents!
+nmf_model.fit(dtm)
+
+```

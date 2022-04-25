@@ -17,7 +17,7 @@ provides a general guide of the course and points out to the different notebooks
 4. Text Classification: `./04_Text_Classification`
 5. Semantics and Sentiment Analysis: `./05_Semantics_Sentiment_Analysis`
 6. Topic Modeling: `./06_Topic_Modeling`
-7. Deep Learning for NLP
+7. Deep Learning for NLP: `./07_DeepLearning_NLP`
 
 Mikel Sagardia, 2022.
 No guarantees.
@@ -1414,3 +1414,6 @@ nmf_model = NMF(n_components=7,random_state=42)
 nmf_model.fit(dtm)
 
 ```
+
+## 7. Deep Learning for NLP: `./07_DeepLearning_NLP`
+

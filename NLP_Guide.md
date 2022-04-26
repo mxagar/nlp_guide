@@ -1417,3 +1417,32 @@ nmf_model.fit(dtm)
 
 ## 7. Deep Learning for NLP: `./07_DeepLearning_NLP`
 
+The **first part** of the section focuses on basic Deep Learning concepts. I have notes on these concepts already in previous documents:
+
+- `~/Dropbox/Documentation/howtos/keras_tensorflow_guide.txt`
+- `~/git_repositories/data_science_python_tools/19_NeuralNetworks_Keras`
+
+The latter is a section in my repository [data_science_python_tools](https://github.com/mxagar/data_science_python_tools). It contains specific topics relevant to NLP:
+
+- Keras basics
+- RNNs
+- NLP
+
+In the following I list the introductory concepts discussed in the first part:
+
+- Perceptron model
+- Multilayer Peceptrons (MLP): Neural Networks
+  - Activation functions: sigmoid, ReLU, tanh
+- Keras basics: Iris dataset classification
+- Recurrent Neural Networks (RNN): neuron output fed into same neuron in next time step/forward pass
+  - Continuation of sequences
+- Long Short Term Memory Cells
+
+The **second part** introduces two interesting notebooks that deal with text generation:
+
+- `01_TextGeneration_LSTM.ipynb`
+- `02_ChatBots_LSTM.ipynb`
+
+### 7.1 Text Generation with LSTMs `01_TextGeneration_LSTM.ipynb`
+
+### 7.2 Chat Bots with LSTMs `02_ChatBots_LSTM.ipynb`

@@ -1440,9 +1440,424 @@ In the following I list the introductory concepts discussed in the first part:
 
 The **second part** introduces two interesting notebooks that deal with text generation:
 
-- `01_TextGeneration_LSTM.ipynb`
-- `02_ChatBots_LSTM.ipynb`
+- `01_TextGeneration_LSTM.ipynb`: given a sequence of `N` words/tokens, the token `N+1` is predicted. This can be extended to predict a sequence of tokens by feeding a new sequence that contains the preddeicted token at the end.
+- `02_ChatBots_LSTM.ipynb`: a model is implemented which is able to deliver a `yes/no` answer given a background `story` and a `query/question`. The model is defined following the paper by Sukhbaatar et al., referenced in the notebook. Given that the case is very specific, only the introductory notes are collected here; the reader should open the notebook for more details on the code.
 
 ### 7.1 Text Generation with LSTMs `01_TextGeneration_LSTM.ipynb`
 
+This notebok contains the definition, training and inference with a LSTM model that generates text. The model is trained with the text of Moby Dick and it is designed to predict the next token given a sequence of tokens; i.e., we input `N` preprocessed tokens and the model outputs the token `N+1`, which is th emost probable, given the fed sequence. All the necessary text pre-processing is shown: tokenization, vocabulary generation, encoding, sequence generation, mapping into a compact embedding, etc.
+
+For more information on Deep Learning concepts and Recurrent Neural Networks (RNNs), check:
+
+- `~/Dropbox/Documentation/howtos/keras_tensorflow_guide.txt`
+- `~/git_repositories/data_science_python_tools/19_NeuralNetworks_Keras`
+
+The latter is a section in my repository [data_science_python_tools](https://github.com/mxagar/data_science_python_tools). It contains specific notebooks relevant to NLP, covering Keras basics, RNNs, and NLP.
+
+Overview of contents:
+1. Load the Training Text
+2. Text Processing
+    - 2.1 Tokenize and Clean the Text
+    - 2.2 Create Sequences of Tokens
+    - 2.3 Convert Token Sequences to Integer Sequences
+    - 2.4 Separate the Input and the Target: X, y
+3. Neural Network - Model
+    - 3.1 Define the Model
+    - 3.2 Train the Model
+    - 3.3 Save the Model and the Tokenizer
+4. Generate New Text
+    - 4.1 Text Generation Function
+    - 4.2 Grab a Random Seed Text Sequence and Predict the Next 50 Words
+    - 4.3 Testing a Big Model Trained with the Full Moby Dick Text
+
+In the following, the python code of the notebook is listed:
+
+```python
+
+### --- 1. Load the Training Text
+
+def read_file(filepath):
+    with open(filepath) as f:
+        str_text = f.read()
+    return str_text
+
+# Complete Moby Dick
+read_file('../data/melville-moby_dick.txt');
+# First 4 chapters
+read_file('../data/moby_dick_four_chapters.txt');
+
+### --- 2. Text Processing
+
+### ---  2.1 Tokenize and Clean the Text
+
+import spacy
+# We want only tokenization
+# thus, we disable parsing, tagging and named-entity recognition, to make it faster
+nlp = spacy.load('en_core_web_sm', disable=['parser', 'tagger', 'ner'])
+
+# Spacy sometimes complains if the text is very large,
+# thus we extend the max_length
+nlp.max_length = 1198623
+
+# Convinience function which 
+# (1) tokenizes and (2) filters tokens that are not in the puntuation string
+# The string is taken from Keras
+# Note that the used text (Moby Dick) has many such characters,
+# and we want to avoid learning them - i.e., we don't want to overfit & predict them!
+def separate_punc(doc_text):
+    return [token.text.lower() for token in nlp(doc_text) if token.text not in '\n\n \n\n\n!"-#$%&()--.*+,-/:;<=>?@[\\]^_`{|}~\t\n ']
+
+# Load and tokenize text
+d = read_file('../data/moby_dick_four_chapters.txt')
+tokens = separate_punc(d)
+
+len(tokens) # 11338
+tokens[:10] # call, ishmael, ...
+
+### ---  2.2 Create Sequences of Tokens
+
+# We are going to group the tokens in sequences of N. 
+# We feed the neural network with these N tokens and let it predict the N + 1 token. 
+# For that reason, N must be long enough to learn the structure of a sentence. 
+# We choose N = 25; i.e., we build the model so that it predicts the token number 26. 
+# Other texts or authors might require more tokens, e.g., Shakespeare 50, haikus 15, etc.
+
+# Organize into sequences of tokens
+train_len = 25+1 # 25 training words , then one target word
+
+# Empty list of sequences
+text_sequences = []
+
+for i in range(train_len, len(tokens)):
+    
+    # Grab train_len# amount of characters
+    seq = tokens[i-train_len:i]
+    
+    # Add to list of sequences
+    text_sequences.append(seq)
+
+# We can create a text string of each sequence as follows
+i = 0
+' '.join(text_sequences[i])
+
+# The next sequence starts with the next token
+i = 1
+' '.join(text_sequences[i])
+
+### ---  2.3 Convert Token Sequences to Integer Sequences
+
+# We have sequences of 25 + 1 words as token strings. 
+# To feed them to the neural network, we need to encode them as numbers -- i.e., integers.
+# We can do that with the keras Tokenizer
+
+from keras.preprocessing.text import Tokenizer
+
+# Integer-encoded sequences of words
+tokenizer = Tokenizer()
+# Pass all text sequences: array which contains arrays of 25+1 token strings
+tokenizer.fit_on_texts(text_sequences)
+# Convert token-string sequences into integers sequences
+sequences = tokenizer.texts_to_sequences(text_sequences)
+
+# Sequence i = 0
+i = 0
+sequences[1]
+
+# Dictionary with index-string pairs
+tokenizer.index_word
+
+# We can see the token-string of each integer/index using the dictionary
+for i in sequences[0]:
+    print(f'{i} : {tokenizer.index_word[i]}')
+
+# How many times appears each token?
+tokenizer.word_counts
+
+# How many unique words do we have?
+vocabulary_size = len(tokenizer.word_counts)
+print(vocabulary_size) # 2718
+
+# The sequence of integers needs to be converted into a 2D numpy array
+import numpy as np
+
+sequences = np.array(sequences)
+
+# Each row is a sequence of 25+1 tokens: 25 are the input, 1 is the target
+# These tokens are represented as integers
+sequences.shape # (11312, 26)
+
+### ---  2.4 Separate the Input and the Target: X, y
+
+from keras.utils import to_categorical
+
+# First N-1 words: Inputs: m x N
+X = sequences[:,:-1]
+
+# Last word: Target: m
+y = sequences[:,-1]
+
+# One-hot encoding
+# We have computed the size of the vocabulary above: number of unique words in text
+# We add an integer because of how Keras padding works
+y = to_categorical(y, num_classes=vocabulary_size+1)
+
+# Sequence length: N
+seq_len = X.shape[1] # 25
+
+# Number of sequences x N tokens
+X.shape # (11312, 25)
+
+# Number of sequences x number of vocabulary items (binary)
+y.shape # (11312, 2719)
+
+### --- 3. Neural Network - Model
+
+### ---  3.1 Define the Model
+
+import keras
+from keras.models import Sequential
+from keras.layers import Dense,LSTM,Embedding
+
+def create_model(vocabulary_size, seq_len):
+    model = Sequential()
+    # Embedding: sparse one-hot encoded word vectors are converted to dense word vectors
+    model.add(Embedding(vocabulary_size, seq_len, input_length=seq_len))
+    # LSTM units: It is common to make it a multiple of the sequence length
+    # The more units, the longer the training takes
+    # In the videos, 50 = 25*2 was chosen
+    multiple = 6 # 25*6 = 150
+    model.add(LSTM(seq_len*multiple, return_sequences=True))
+    model.add(LSTM(seq_len*multiple))
+    model.add(Dense(seq_len*multiple, activation='relu'))
+    # The last layer needs to be the size of our vocabulary: a word is predicted
+    model.add(Dense(vocabulary_size, activation='softmax'))
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    model.summary()
+    return model
+
+# Define model
+# We pass the vocabulary size + 1 due to keras padding
+model = create_model(vocabulary_size+1, seq_len)
+
+### ---  3.2 Train the Model
+
+# Train for at least 200 epochs!
+# Otherwise, just the most common words are predicted...
+model.fit(X, y, batch_size=128, epochs=5,verbose=1)
+
+### ---  3.3 Save the Model and the Tokenizer
+
+# We need to save the tokenizer together with the model, because the model receives the text processed with it!
+
+# Save the model
+model.save('lstm_moby_dick_5_epochs.h5')
+
+# Save the tokenizer
+from pickle import dump,load
+dump(tokenizer, open('lstm_moby_dick_tokenizer', 'wb'))
+
+### --- 4. Generate New Text
+
+### ---  4.1 Text Generation Function
+
+# Here we create a function that uses the model and the tokenizer to generate new text.
+
+from random import randint
+from pickle import load
+from keras.models import load_model
+from keras.preprocessing.sequence import pad_sequences
+
+def generate_text(model, tokenizer, seq_len, seed_text, num_gen_words):
+    '''
+    INPUTS:
+    model : model that was trained on text data
+    tokenizer : tokenizer that was fit on text data
+    seq_len : length of training sequence
+    seed_text : raw string text to serve as the seed
+    num_gen_words : number of words to be generated by model
+    '''
+    
+    # Final Output
+    output_text = []
+    
+    # Intial Seed Sequence
+    input_text = seed_text
+    
+    # Create num_gen_words
+    for i in range(num_gen_words):
+        
+        # Take the input text string and encode it to a sequence
+        encoded_text = tokenizer.texts_to_sequences([input_text])[0]
+        
+        # Pad sequences to our trained rate (seq_len=25 words in the video)
+        # Padding means if we have more or less tokens than maxlen
+        # the token sequence is always set to be maxlen.
+        # truncating='pre': remove tokens at the beginning
+        # padding='pre': extend sequence at the beginning - with argument value (=0.0)
+        # Note that we are extending the input_text with predicted words below,
+        # thus, truncation is happening all the time!
+        pad_encoded = pad_sequences([encoded_text], maxlen=seq_len, truncating='pre')
+        
+        # Predict class probabilities for each word
+        # This is the next word
+        pred_word_ind = model.predict_classes(pad_encoded, verbose=0)[0]
+        
+        # Grab (next) word
+        pred_word = tokenizer.index_word[pred_word_ind] 
+        
+        # Update the sequence of input text (shifting one over with the new word)
+        # Note that we are extending our input text with the new predicted words
+        # and pad_sequences truncates/removes the beginning part every iteration!
+        input_text += ' ' + pred_word
+        
+        # Concatenate all predicted words
+        output_text.append(pred_word)
+        
+    # Make it look like a sentence
+    return ' '.join(output_text)
+
+### ---  4.2 Grab a Random Seed Text Sequence and Predict the Next 50 Words
+
+import random
+random.seed(101)
+random_pick = random.randint(0,len(text_sequences))
+
+random_seed_text = text_sequences[random_pick]
+
+seed_text = ' '.join(random_seed_text)
+
+seed_text # "thought i to myself the man 's a human being just as i am he has just as much reason to fear me as i have"
+
+# We seed a seed sequence of words
+# and for that sequence, we generate the next 50 words.
+# If the model is simplistic and was trained with few epochs,
+# just the most common words will be picked.
+# For realistic results, we need to have a complex model (at least 150 LSTM unists in 3 layers)
+# and we need to train it long enough (at least 300 epochs)
+generate_text(model,tokenizer,seq_len,seed_text=seed_text,num_gen_words=50)
+
+### ---  4.3 Testing a Big Model Trained with the Full Moby Dick Text
+
+# This model was provided by the course.
+
+#model = load_model('epoch250.h5')
+model = load_model('epochBIG.h5')
+model.summary()
+
+tokenizer = load(open('epochBIG','rb'))
+
+generate_text(model,tokenizer,seq_len,seed_text=seed_text,num_gen_words=50)
+# "to be seen there was no bad olfactories my own letter was cheerily listening over his hearers who 's more can go have a wearing answer to accumulate a vow and do him not they to think of his lances stubb sperm by the vast man 's sign by the"
+
+```
+
+
 ### 7.2 Chat Bots with LSTMs `02_ChatBots_LSTM.ipynb`
+
+This notebook implements a Question-Answer bot which is able to answer questions given a base story. The [BaBi](https://research.facebook.com/downloads/babi/) dataset from Facebook/Meta is used. This dataset is composed with examples consisting of three elemets (Story-Question-Answer), as the following:
+
+```
+1. Story: Jane went to the store. Mike ran to the bedroom.
+2. Question: Is Mike in the store?
+3. Answer: No
+```
+
+The built model follows paper by Sukhbaatar et al., linked in the course:
+
+`./literature/SukhbaatarFergus_EndToEndMemoryNetworks_2015.pdf`
+
+**Sainbayar Sukhbaatar, Arthur Szlam, Jason Weston, and Rob Fergus. End-To-End Memory Networks, 2015.**
+
+Note that the implementaton of the model is specific to the model!
+
+Overview of contents:
+1. End-To-End Memory Networks, by Sukhbaatar et al., 2015
+    - Approach
+    - Model & Training Details
+    - Simplified Example in the Notebook
+2. Load and Prepare the Dataset
+    - 2.1 Understand the Structure of the Dataset
+    - 2.2 Set Up the Vocabulary
+    - 2.3 Vectorize the Dataset
+    - 2.4 Functionalize the Vectorization
+3. Model
+    - 3.1 Encoders
+        - Embedding A / Input Encoder m: `x_i -> m_i`
+        - Embedding C / Input Encoder c: `x_i -> c_i`
+        - Embedding B / Input Encoder u: `q -> u`
+        - Encode the Sequences: `m_i`, `c_i`, `u`
+    - 3.2 Apply the Encoders and Get Outputs
+        - Match Probability:  `p_i <- softmax(u^T m_i)`
+        - Response/Output Vector `o`
+        - Concatenate: `o + u`
+    - 3.3 Finalize Model Layers
+    - 3.4 Training
+4. Evaluation
+5. Inference with New Texts: Writing Our Own Stories
+
+#### End-To-End Memory Networks, by Sukhbaatar et al., 2015
+
+Answering questions given context is very challenging, because long-term dependencies need to be addressed in sequential data.
+
+Appreaches that use **attention** an **explicit storage** have appeared to solve tackle the problem.
+
+The papper presents a RNN in which the recurrence reads from an external memory in multiple hops or computational steps per searched symbol.
+
+##### Approach
+
+The model
+
+- takes
+    - a discrete set of inputs that are store in the memory: `x1, x2, ..., xn`
+    - a query `q`
+- outputs: an answer `a`
+
+Each of the `x`, `a`, `q` contains symbols that com from a vocabulary/dictionary with `V` words. I understand that `x` is a collection of sequences, while `q` and `a` are supposed to be one sequence each.
+
+The model writes all `x` to the memory up to a fixed buffer size and then finds a continuous representation for the `x` and `q` (using embeddings). Then, those continuous representations are processed in several steps/hops to obtain `a`.
+
+Each layer has the following components:
+- The input memory where all sentences/sequences `x` and `q` are stored encoded in an embedding A.
+- The ouput memory where all sentences/sequences `x` are stored encoded in an embedding C; this memory contains the seed elements that, together with `q`, lead to an answer `a`.
+- The generator of the final prediction of the layer, which combines the items in both.
+
+Then, these single layers are combined as recurrent layers that perform several hops or steps to obtain the final output.
+
+A single layer consists of the following operations, and it is depicted in the figure below:
+
+- given `x_i`, we compute in th einput memory: `m_i <- EmbeddingA(x_i)`
+- we store the vector `m_i` in the input memory
+- given `q`, we compute: `u <- EmbeddingB(q)`
+- we store the vector `u` in the input memory
+- we computethe match weight/probability `p_i` as: `p_i = softmax(u^T * m_i)` (inner product)
+- given `x_i`, we compute in the output memory: `c_i <- EmbeddingC(x_i)`
+- the output/response vector `o` is the sum of `c_i` weighted by `p_i`: `o <- sum(p_i*c_i)`
+- the predicted answer `a` is: `a <- softmax(W(o+u))`
+    - `W` is a weight matrix of size `V x d`
+    - `V`: number of symbols/tokens in the vocabulary/dictionary
+    - `d`: size of the compact sequence vectors in the embedding
+    
+Note that everything is differentiable. That makes possible to use backpropagation, i.e., we can train the layers to optimize the weights of `W`.
+
+![End-To-End memory Networks](./pics/end_to_end_memory_networks.png)
+
+The recurrent aspect is achieved by stacking one layer after the other. All layers get all sentences of the story `x` and the same question `q`, but the output from the previous layer is summed to the question in the next layer.
+
+##### Model & Training Details
+
+- `K = 3` hops/steps or layers were used.
+- Tyically, the answr is a single words, but sometimes several.
+- Some sentences in the story are irrelevant for the answer; the relevant ones are called **support** and the model detects them.
+- The sentences are represented initially as bags of words; each sentence `x_i` in a story is transformed in `m_i` by summing all the vector representations of all words after applying the embedding.
+- In order to preserve the order aspect of the words in a sentence and the temporal aspect of the sentences in a story, some weights/encoding are applied element-wise to the summations.
+- They found that adding random noise to the temporal encoding improved the performance.
+- Learning rate: `lr = 0.01`, annealing to `lr/2` every 25 epochs until 100 epochs were reached.
+- The `null` symbol was used for padding.
+
+##### Simplified Example in the Notebook
+
+The example in this notebook uses a very similar approach, but the dataset consists of Story-Question-Answer items that have only `Yes/No` answers.
+
+#### Implementation
+
+For more details on the implementation, look at the notebook. The code is not added here because I think it is quite specific to the model definition. However, consider that there are also useful approaches to text vectorization.

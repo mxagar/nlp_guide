@@ -1,6 +1,6 @@
-# NLP Guide
+# Natural Language Processing (NLP) Guide
 
-A guide on Natural Language Processing (NLP) structured after following the Udemy course [NLP - Natural Language Processing with Python](https://www.udemy.com/course/nlp-natural-language-processing-with-python/) by José Marcial Portilla.
+This is my guide on Natural Language Processing (NLP) structured after following the Udemy course [NLP - Natural Language Processing with Python](https://www.udemy.com/course/nlp-natural-language-processing-with-python/) by José Marcial Portilla.
 
 Note that I would have forked the original repository to add notes, but the material is provided with a download link.
 
@@ -10,16 +10,42 @@ This file of mine
 
 provides a general guide of the course and points out to the different notebooks of each section:
 
-0. Setup
-1. Python Text Basics: `./01_Python_Text_Basics`
-2. NLP Basics: `./02_Natural_Language_Processing_Basics`
-3. Part of Speech Tagging & Named Entity Recognition: `./03_POS_Tagging_NER`
-4. Text Classification: `./04_Text_Classification`
-5. Semantics and Sentiment Analysis: `./05_Semantics_Sentiment_Analysis`
-6. Topic Modeling: `./06_Topic_Modeling`
-7. Deep Learning for NLP: `./07_DeepLearning_NLP`
+- [Natural Language Processing (NLP) Guide](#natural-language-processing-nlp-guide)
+  - [0. Setup](#0-setup)
+  - [1. Python Text Basics: `./01_Python_Text_Basics`](#1-python-text-basics-01_python_text_basics)
+    - [1.1 Working with Text and PDF Files: `01_Text_PDF_Files.ipynb`](#11-working-with-text-and-pdf-files-01_text_pdf_filesipynb)
+    - [1.2 Regular Expressions: `02_Regular_Expressions.ipynb`](#12-regular-expressions-02_regular_expressionsipynb)
+  - [2. Natural Language Processing Basics: `02_Natural_Language_Processing_Basics/`](#2-natural-language-processing-basics-02_natural_language_processing_basics)
+    - [2.1 Spacy Basics: `01_Spacy_Basics.ipynb`](#21-spacy-basics-01_spacy_basicsipynb)
+    - [2.2 Tokenization: `02_Tokenization.ipynb`](#22-tokenization-02_tokenizationipynb)
+    - [2.3 Stemming: `03_Stemming.ipynb`](#23-stemming-03_stemmingipynb)
+    - [2.4 Lemmatization: `04_Lemmatization.ipynb`](#24-lemmatization-04_lemmatizationipynb)
+    - [2.5 Stop Words: `05_StopWords.ipynb`](#25-stop-words-05_stopwordsipynb)
+    - [2.6 Vocabulary and Matching: `06_Vocabulary_Matching.ipynb`](#26-vocabulary-and-matching-06_vocabulary_matchingipynb)
+  - [3. Part-of-Speech (POS) Tagging an Named Entity Recognition (NER): `03_POS_Tagging_NER/`](#3-part-of-speech-pos-tagging-an-named-entity-recognition-ner-03_pos_tagging_ner)
+    - [3.1 Part of Speech (POS) Tagging: `01_PartOfSpeech_Tagging.ipynb`](#31-part-of-speech-pos-tagging-01_partofspeech_taggingipynb)
+    - [3.2 Named Entity Recognition: `02_Named_Entity_Recognition.ipynb`](#32-named-entity-recognition-02_named_entity_recognitionipynb)
+    - [3.3 Sentence Segmentation: `03_Sentence_Segmentation.ipynb`](#33-sentence-segmentation-03_sentence_segmentationipynb)
+  - [4. Text Classification: `04_Text_Classification/`](#4-text-classification-04_text_classification)
+    - [4.1 Introduction to Scikit Learn and ML Concepts: `00_ScikitLearn_Intro.ipynb`](#41-introduction-to-scikit-learn-and-ml-concepts-00_scikitlearn_introipynb)
+    - [4.2 Text Feature Extraction: `01_Text_Feature_Extraction.ipynb`](#42-text-feature-extraction-01_text_feature_extractionipynb)
+    - [4.3 Text Classification Project: `02_Text_Classification_Project.ipynb`](#43-text-classification-project-02_text_classification_projectipynb)
+  - [5. Semantics and Sentiment Analysis: `05_Semantics_Sentiment_Analysis/`](#5-semantics-and-sentiment-analysis-05_semantics_sentiment_analysis)
+    - [5.1 Semantics and Word Vectors: `01_Word_Vectors.ipynb`](#51-semantics-and-word-vectors-01_word_vectorsipynb)
+    - [5.2 Sentiment Analysis with VADER: `02_Sentiment_Analysis.ipynb`](#52-sentiment-analysis-with-vader-02_sentiment_analysisipynb)
+  - [6. Topic Modeling: `./06_Topic_Modeling`](#6-topic-modeling-06_topic_modeling)
+    - [6.1 Topic Modeling: Latent Dirichlet Allocation (LDA): `01_Latent_Dirichlet_Allocation.ipynb`](#61-topic-modeling-latent-dirichlet-allocation-lda-01_latent_dirichlet_allocationipynb)
+    - [6.2 Topic Modeling: Non-Negative Matrix Factorization (NNMF): `02_NonNegative_Matrix_Factorization.ipynb`](#62-topic-modeling-non-negative-matrix-factorization-nnmf-02_nonnegative_matrix_factorizationipynb)
+  - [7. Deep Learning for NLP: `./07_DeepLearning_NLP`](#7-deep-learning-for-nlp-07_deeplearning_nlp)
+    - [7.1 Text Generation with LSTMs `01_TextGeneration_LSTM.ipynb`](#71-text-generation-with-lstms-01_textgeneration_lstmipynb)
+    - [7.2 Chat Bots with LSTMs `02_ChatBots_LSTM.ipynb`](#72-chat-bots-with-lstms-02_chatbots_lstmipynb)
+      - [End-To-End Memory Networks, by Sukhbaatar et al., 2015](#end-to-end-memory-networks-by-sukhbaatar-et-al-2015)
+        - [Approach](#approach)
+        - [Model & Training Details](#model--training-details)
+        - [Simplified Example in the Notebook](#simplified-example-in-the-notebook)
+      - [Implementation](#implementation)
 
-Mikel Sagardia, 2022.
+Mikel Sagardia, 2022.  
 No guarantees.
 
 ## 0. Setup

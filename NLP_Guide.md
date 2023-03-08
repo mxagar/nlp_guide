@@ -41,7 +41,7 @@ provides a general guide of the course and points out to the different notebooks
     - [7.2 Chat Bots with LSTMs `02_ChatBots_LSTM.ipynb`](#72-chat-bots-with-lstms-02_chatbots_lstmipynb)
       - [End-To-End Memory Networks, by Sukhbaatar et al., 2015](#end-to-end-memory-networks-by-sukhbaatar-et-al-2015)
         - [Approach](#approach)
-        - [Model & Training Details](#model--training-details)
+        - [Model \& Training Details](#model--training-details)
         - [Simplified Example in the Notebook](#simplified-example-in-the-notebook)
       - [Implementation](#implementation)
 
@@ -1083,7 +1083,7 @@ Overview of contents:
     - 2.1 Load and Clean the Data
     - 2.2 Add Sentiment Scores
     - 2.3 Check Accuracy
-3. Example 2: Moview Reviews Sentiment Analysis with NLTK-VADER
+3. Example 2: Movie Reviews Sentiment Analysis with NLTK-VADER
     - 3.1 Load and Clean the Data
     - 3.2 Add Sentiment Scores
     - 3.3 Check Accuracy

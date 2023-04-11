@@ -23,6 +23,12 @@ Besides of that:
 - `./pics/` contains pictures used in the guide.
 - `./data/` contains texts and datasets.
 
+Finally, here is a list of interesting links:
+
+- [NLP Snippets in Python](https://medium.com/bitgrit-data-science-publication/nlp-snippets-in-python-90ac29ffaea0#11f6)
+- [Clean and Tokenize Text With Python](https://dylancastillo.co/nlp-snippets-clean-and-tokenize-text-with-python/)
+- [Primer on Cleaning Text Data](https://towardsdatascience.com/primer-to-cleaning-text-data-7e856d6e5791)
+
 Mikel Sagardia, 2022.  
 Enjoy. No guarantees.
 

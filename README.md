@@ -9,13 +9,14 @@ Note that I would have forked the original repository to add notes, but the mate
 The file [`NLP_Guide.md`](NLP_Guide.md) provides a general guide of the course and points out to the different notebooks of each section:
 
 0. Setup
-2. Python Text Basics
-3. NLP Basics
-4. Part of Speech Tagging & Named Entity Recognition
-5. Text Classification
-6. Semantics and Sentiment Analysis
-7. Topic Modeling
-8. Deep Learning for NLP
+1. Python Text Basics
+2. NLP Basics
+3. Part of Speech Tagging & Named Entity Recognition
+4. Text Classification
+5. Semantics and Sentiment Analysis
+6. Topic Modeling
+7. Deep Learning for NLP
+8. Text Embeddings
 
 Besides of that:
 
@@ -25,9 +26,12 @@ Besides of that:
 
 Finally, here is a list of interesting links:
 
+- My repository on notes related to Deep Learning: [deep_learning_udacity](https://github.com/mxagar/deep_learning_udacity).
+- My repository on **text embeddings** and some quick applications: [tool_guides/sbert](https://github.com/mxagar/tool_guides/tree/master/sbert).
 - [NLP Snippets in Python](https://medium.com/bitgrit-data-science-publication/nlp-snippets-in-python-90ac29ffaea0#11f6)
 - [Clean and Tokenize Text With Python](https://dylancastillo.co/nlp-snippets-clean-and-tokenize-text-with-python/)
 - [Primer on Cleaning Text Data](https://towardsdatascience.com/primer-to-cleaning-text-data-7e856d6e5791)
+
 
 Mikel Sagardia, 2022.  
 Enjoy. No guarantees.

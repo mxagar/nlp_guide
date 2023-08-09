@@ -44,6 +44,7 @@ provides a general guide of the course and points out to the different notebooks
         - [Model \& Training Details](#model--training-details)
         - [Simplified Example in the Notebook](#simplified-example-in-the-notebook)
       - [Implementation](#implementation)
+  - [8. Text Embeddings](#8-text-embeddings)
 
 Additionally, I recommend to check these interesting links:
 
@@ -1878,7 +1879,7 @@ The recurrent aspect is achieved by stacking one layer after the other. All laye
 ##### Model & Training Details
 
 - `K = 3` hops/steps or layers were used.
-- Tyically, the answr is a single words, but sometimes several.
+- Tyically, the answer is a single words, but sometimes several.
 - Some sentences in the story are irrelevant for the answer; the relevant ones are called **support** and the model detects them.
 - The sentences are represented initially as bags of words; each sentence `x_i` in a story is transformed in `m_i` by summing all the vector representations of all words after applying the embedding.
 - In order to preserve the order aspect of the words in a sentence and the temporal aspect of the sentences in a story, some weights/encoding are applied element-wise to the summations.
@@ -1893,3 +1894,7 @@ The example in this notebook uses a very similar approach, but the dataset consi
 #### Implementation
 
 For more details on the implementation, look at the notebook. The code is not added here because I think it is quite specific to the model definition. However, consider that there are also useful approaches to text vectorization.
+
+## 8. Text Embeddings
+
+See my other repository [tool_guides/sbert](https://github.com/mxagar/tool_guides/tree/master/sbert).
